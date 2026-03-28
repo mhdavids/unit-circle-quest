@@ -243,7 +243,7 @@ function hideModal() {
 }
 
 // ─── Game Over ────────────────────────────────────────────────────────────────
-function triggerGameOver() {
+async function triggerGameOver() {
   hideModal();
   const el = document.getElementById('game-over');
   if (!el) return;
@@ -251,8 +251,8 @@ function triggerGameOver() {
   document.getElementById('final-level').textContent = `Reached Level ${state.levelIndex + 1}`;
   el.classList.add('active');
 
-  // Check if high score
-  const scores = loadHighScores();
+  // Fetch current scores to decide whether this is a top-10 entry
+  const scores = await fetchHighScores();
   const minScore = scores.length < 10 ? -1 : scores[scores.length - 1].score;
   if (state.score > minScore || scores.length < 10) {
     document.getElementById('name-entry-section').classList.remove('hidden');
@@ -269,30 +269,46 @@ function hideGameOver() {
   if (el) el.classList.remove('active');
 }
 
-// ─── High Score System ────────────────────────────────────────────────────────
-function loadHighScores() {
+// ─── High Score System (Firebase Realtime Database) ──────────────────────────
+const FB_URL = 'https://unit-circle-quest-default-rtdb.firebaseio.com/scores';
+
+async function fetchHighScores() {
   try {
-    return JSON.parse(localStorage.getItem('ucg_highscores') || '[]');
-  } catch { return []; }
+    const res = await fetch(`${FB_URL}.json`);
+    const data = await res.json();
+    if (!data) return [];
+    // Firebase returns an object keyed by push ID — convert to array
+    return Object.values(data)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 10);
+  } catch {
+    return [];
+  }
 }
 
-function saveHighScores(scores) {
-  localStorage.setItem('ucg_highscores', JSON.stringify(scores));
+async function addHighScore(name, score, level) {
+  const entry = {
+    name: name.toUpperCase().slice(0, 3).padEnd(3, '_'),
+    score,
+    level,
+    ts: Date.now()
+  };
+  try {
+    await fetch(`${FB_URL}.json`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(entry)
+    });
+  } catch {
+    // silently fail — score just won't appear on leaderboard
+  }
 }
 
-function addHighScore(name, score, level) {
-  const scores = loadHighScores();
-  scores.push({ name: name.toUpperCase().slice(0, 3).padEnd(3, '_'), score, level });
-  scores.sort((a, b) => b.score - a.score);
-  const trimmed = scores.slice(0, 10);
-  saveHighScores(trimmed);
-  return trimmed;
-}
-
-function renderHighScores(tableId = 'highscore-table') {
-  const scores = loadHighScores();
+async function renderHighScores(tableId = 'highscore-table') {
   const tbl = document.getElementById(tableId);
   if (!tbl) return;
+  tbl.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-dim)">Loading...</td></tr>';
+  const scores = await fetchHighScores();
   if (scores.length === 0) {
     tbl.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-dim)">No scores yet!</td></tr>';
     return;
@@ -323,9 +339,11 @@ function setupNameEntry() {
 
   const saveBtn = document.getElementById('save-score-btn');
   if (saveBtn) {
-    saveBtn.onclick = () => {
+    saveBtn.onclick = async () => {
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving...';
       const name = Array.from(inputs).map(i => i.value || '_').join('');
-      addHighScore(name, state.score, state.levelIndex + 1);
+      await addHighScore(name, state.score, state.levelIndex + 1);
       document.getElementById('name-entry-section').classList.add('hidden');
       renderHighScores();
     };

@@ -137,17 +137,21 @@
     });
     document.getElementById('play-btn').href = `game.html?mode=${selectedMode}`;
 
-    // ── High scores ──
-    function renderHSPreview() {
-      const scores = JSON.parse(localStorage.getItem('ucg_highscores') || '[]');
+    // ── High scores (Firebase) ──
+    async function renderHSPreview() {
       const tbody = document.getElementById('hs-preview-body');
-      if (!scores.length) {
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-dim);padding:0.5rem">Loading...</td></tr>';
+      try {
+        const res = await fetch('https://unit-circle-quest-default-rtdb.firebaseio.com/scores.json');
+        const data = await res.json();
+        if (!data) throw new Error('empty');
+        const scores = Object.values(data).sort((a, b) => b.score - a.score).slice(0, 5);
+        tbody.innerHTML = scores.map((s, i) =>
+          `<tr><td class="rank-col">${i+1}.</td><td>${s.name}</td><td style="color:var(--neon-gold);font-family:monospace">${String(s.score).padStart(6,'0')}</td><td style="color:var(--text-dim)">Lvl ${s.level}</td></tr>`
+        ).join('');
+      } catch {
         tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-dim);padding:0.5rem">No scores yet — be the first!</td></tr>';
-        return;
       }
-      tbody.innerHTML = scores.slice(0, 5).map((s, i) =>
-        `<tr><td class="rank-col">${i+1}.</td><td>${s.name}</td><td style="color:var(--neon-gold);font-family:monospace">${String(s.score).padStart(6,'0')}</td><td style="color:var(--text-dim)">Lvl ${s.level}</td></tr>`
-      ).join('');
     }
     renderHSPreview();
   </script>
