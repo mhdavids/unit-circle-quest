@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unit Circle Quest — Play</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+    .game-wrap {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .game-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      overflow-y: auto;
+      padding: 0.5rem;
+    }
+
+    #level-up-banner {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 3rem;
+      color: var(--neon-gold);
+      text-shadow: var(--glow-gold);
+      font-family: 'Orbitron', monospace;
+      font-weight: 900;
+      z-index: 50;
+      pointer-events: none;
+      letter-spacing: 4px;
+    }
+
+    .game-over-panel {
+      background: var(--panel);
+      border: 2px solid var(--neon-pink);
+      border-radius: var(--radius);
+      padding: 2rem;
+      max-width: 420px;
+      width: 90vw;
+      box-shadow: var(--glow-pink);
+    }
+
+    .hs-section {
+      width: 100%;
+      margin-top: 1rem;
+    }
+
+    .game-over-btns {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    /* Keyboard hint */
+    .kbd-hint {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      text-align: center;
+      margin-bottom: 0.25rem;
+    }
+
+    .timer-row {
+      width: 100%;
+      max-width: 500px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 0.25rem 0;
+    }
+    #timer-num {
+      font-size: 0.9rem;
+      color: var(--text-dim);
+      font-family: monospace;
+      min-width: 30px;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+  <!-- ── Game Wrap ────────────────────────────────────────────────── -->
+  <div class="game-wrap">
+
+    <!-- Header HUD -->
+    <div class="game-header">
+      <a href="index.html" class="btn btn-sm" style="border-color:var(--text-dim);color:var(--text-dim)">← Menu</a>
+      <div id="lives-display" class="lives-display"></div>
+      <div class="level-display" id="level-display">LVL 1</div>
+      <div class="score-display" id="score-display">Score: 000000</div>
+      <span class="streak-badge" id="streak-badge"></span>
+    </div>
+
+    <!-- Timer -->
+    <div class="timer-row" style="padding:0 0.75rem">
+      <div class="timer-container" style="flex:1">
+        <div class="timer-bar" id="timer-bar" style="width:100%"></div>
+      </div>
+      <span id="timer-num">60s</span>
+    </div>
+
+    <!-- Level progress -->
+    <div class="level-progress" style="width:100%;max-width:500px;margin:0 auto">
+      <span class="level-progress-label" style="min-width:70px">Progress:</span>
+      <div class="level-progress-bar">
+        <div class="level-progress-fill" id="level-progress-fill" style="width:0%"></div>
+      </div>
+      <span class="level-progress-label" id="level-progress-label">0/10</span>
+    </div>
+
+    <!-- Game body -->
+    <div class="game-body">
+
+      <!-- Question -->
+      <div class="question-area" style="width:100%;max-width:500px">
+        <div class="question-label">Find the value:</div>
+        <div class="question-angle title-font" id="question-angle">45°</div>
+        <div class="question-func" id="question-func">
+          Find: <span class="func-name">sin</span>(45°) = ?
+        </div>
+
+        <!-- Answer display -->
+        <div id="answer-display" class="answer-display empty">▮</div>
+      </div>
+
+      <!-- Keyboard hint -->
+      <div class="kbd-hint">[ R ] = √ &nbsp;|&nbsp; [ / ] = fraction &nbsp;|&nbsp; [ - ] = negate &nbsp;|&nbsp; [ U ] = undefined &nbsp;|&nbsp; [ Enter ] = submit</div>
+
+      <!-- Math keyboard -->
+      <div id="keyboard-container" class="math-keyboard"></div>
+
+    </div><!-- end game-body -->
+  </div><!-- end game-wrap -->
+
+  <!-- ── Level Up Banner ─────────────────────────────────────────── -->
+  <div id="level-up-banner" class="hidden title-font"></div>
+
+  <!-- ── Explanation Modal ───────────────────────────────────────── -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal" id="explanation-modal">
+      <div class="modal-title">❌ Here's how to find it:</div>
+      <div id="explanation-content"></div>
+      <div style="text-align:center;margin-top:1rem">
+        <button class="btn btn-primary" id="dismiss-explanation">Got it — Continue →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Game Over ───────────────────────────────────────────────── -->
+  <div class="game-over" id="game-over">
+    <div class="game-over-panel">
+      <div class="game-over-title title-font">GAME OVER</div>
+      <div class="final-score" id="final-score">0</div>
+      <div class="final-level" id="final-level">Reached Level 1</div>
+
+      <!-- Name entry -->
+      <div id="name-entry-section" class="hidden" style="margin-top:1.5rem">
+        <div style="color:var(--neon-gold);margin-bottom:0.5rem;font-size:0.9rem">🏆 New High Score! Enter your initials:</div>
+        <div class="name-entry">
+          <input type="text" class="name-char" maxlength="1" autocomplete="off" spellcheck="false">
+          <input type="text" class="name-char" maxlength="1" autocomplete="off" spellcheck="false">
+          <input type="text" class="name-char" maxlength="1" autocomplete="off" spellcheck="false">
+          <button class="btn btn-gold" id="save-score-btn">SAVE</button>
+        </div>
+      </div>
+
+      <!-- High scores -->
+      <div class="hs-section">
+        <div style="color:var(--neon-gold);font-size:0.85rem;margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:1px">🏆 Hall of Fame</div>
+        <table class="score-table" style="width:100%">
+          <thead><tr><th class="rank-col">#</th><th>Name</th><th>Score</th><th>Level</th></tr></thead>
+          <tbody id="highscore-table"></tbody>
+        </table>
+      </div>
+
+      <div class="game-over-btns">
+        <button class="btn btn-success" onclick="location.reload()">▶ Play Again</button>
+        <a href="lesson.html" class="btn btn-gold">📚 Review Lessons</a>
+        <a href="index.html" class="btn" style="border-color:var(--text-dim);color:var(--text-dim)">Menu</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Scripts ─────────────────────────────────────────────────── -->
+  <script src="js/trig-data.js"></script>
+  <script src="js/keyboard.js"></script>
+  <script src="js/explanation.js"></script>
+  <script src="js/game.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', bootGame);
+  </script>
+</body>
+</html>

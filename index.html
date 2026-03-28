@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unit Circle Quest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .stars {
+      position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0;
+    }
+    .star {
+      position: absolute; background: #fff; border-radius: 50%;
+      animation: twinkle 3s infinite alternate;
+    }
+    @keyframes twinkle { from{opacity:0.2} to{opacity:0.9} }
+
+    .landing { position: relative; z-index: 1; }
+
+    .logo-circle {
+      width: 120px; height: 120px;
+      border: 3px solid var(--neon-blue);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: var(--glow-blue);
+      position: relative;
+      margin-bottom: 0.5rem;
+    }
+    .logo-circle svg { width: 90px; height: 90px; }
+
+    .tagline {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--text-dim);
+      margin-bottom: 0.4rem;
+    }
+
+    .hs-preview {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.5rem;
+      min-width: 280px;
+    }
+  </style>
+</head>
+<body>
+  <div class="stars" id="stars"></div>
+
+  <main class="landing">
+    <!-- Logo -->
+    <div class="logo-circle">
+      <svg viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="45" cy="45" r="38" stroke="#00d4ff" stroke-width="2"/>
+        <!-- axis lines -->
+        <line x1="7" y1="45" x2="83" y2="45" stroke="#7070a0" stroke-width="1" stroke-dasharray="3,3"/>
+        <line x1="45" y1="7" x2="45" y2="83" stroke="#7070a0" stroke-width="1" stroke-dasharray="3,3"/>
+        <!-- 45° point -->
+        <line x1="45" y1="45" x2="72" y2="18" stroke="#ff006e" stroke-width="2"/>
+        <circle cx="72" cy="18" r="4" fill="#ff006e"/>
+        <!-- angle arc -->
+        <path d="M 58 45 A 13 13 0 0 0 53.5 36.5" stroke="#ffd700" stroke-width="1.5" fill="none"/>
+        <!-- small tick marks -->
+        <line x1="45" y1="7" x2="45" y2="12" stroke="#00d4ff" stroke-width="2"/>
+        <line x1="45" y1="83" x2="45" y2="78" stroke="#00d4ff" stroke-width="2"/>
+        <line x1="7" y1="45" x2="12" y2="45" stroke="#00d4ff" stroke-width="2"/>
+        <line x1="83" y1="45" x2="78" y2="45" stroke="#00d4ff" stroke-width="2"/>
+      </svg>
+    </div>
+
+    <h1 class="game-title title-font">Unit Circle Quest</h1>
+    <p class="tagline">Master the Six Trig Functions</p>
+
+    <!-- Mode selector -->
+    <div>
+      <div class="section-label">Angle Mode</div>
+      <div class="mode-selector">
+        <button class="mode-btn active" data-mode="degrees">Degrees °</button>
+        <button class="mode-btn" data-mode="radians">Radians π</button>
+        <button class="mode-btn" data-mode="both">Both 🎲</button>
+      </div>
+    </div>
+
+    <!-- Main actions -->
+    <div class="landing-nav">
+      <a href="game.html" id="play-btn" class="btn btn-primary btn-large title-font">▶ PLAY</a>
+      <a href="lesson.html" class="btn btn-gold">📚 Lessons</a>
+    </div>
+
+    <!-- High scores preview -->
+    <div class="hs-preview">
+      <div class="section-label">🏆 High Scores</div>
+      <table class="score-table">
+        <thead>
+          <tr><th class="rank-col">#</th><th>Name</th><th>Score</th><th>Level</th></tr>
+        </thead>
+        <tbody id="hs-preview-body"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <script src="js/trig-data.js"></script>
+  <script>
+    // ── Stars background ──
+    const starsContainer = document.getElementById('stars');
+    for (let i = 0; i < 80; i++) {
+      const s = document.createElement('div');
+      s.className = 'star';
+      const size = Math.random() * 2.5 + 0.5;
+      s.style.cssText = `width:${size}px;height:${size}px;top:${Math.random()*100}%;left:${Math.random()*100}%;animation-delay:${Math.random()*3}s;animation-duration:${2+Math.random()*3}s`;
+      starsContainer.appendChild(s);
+    }
+
+    // ── Mode selector ──
+    let selectedMode = localStorage.getItem('ucg_mode') || 'degrees';
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+      if (btn.dataset.mode === selectedMode) btn.classList.add('active');
+      else btn.classList.remove('active');
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedMode = btn.dataset.mode;
+        localStorage.setItem('ucg_mode', selectedMode);
+        document.getElementById('play-btn').href = `game.html?mode=${selectedMode}`;
+      });
+    });
+    document.getElementById('play-btn').href = `game.html?mode=${selectedMode}`;
+
+    // ── High scores ──
+    function renderHSPreview() {
+      const scores = JSON.parse(localStorage.getItem('ucg_highscores') || '[]');
+      const tbody = document.getElementById('hs-preview-body');
+      if (!scores.length) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-dim);padding:0.5rem">No scores yet — be the first!</td></tr>';
+        return;
+      }
+      tbody.innerHTML = scores.slice(0, 5).map((s, i) =>
+        `<tr><td class="rank-col">${i+1}.</td><td>${s.name}</td><td style="color:var(--neon-gold);font-family:monospace">${String(s.score).padStart(6,'0')}</td><td style="color:var(--text-dim)">Lvl ${s.level}</td></tr>`
+      ).join('');
+    }
+    renderHSPreview();
+  </script>
+</body>
+</html>

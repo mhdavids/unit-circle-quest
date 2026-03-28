@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unit Circle — Lesson</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="js/trig-data.js" defer></script>
+
+  <style>
+    /* ── Page-level overrides ───────────────────────────────────────────── */
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      line-height: 1.7;
+    }
+
+    /* ── Sticky nav ─────────────────────────────────────────────────────── */
+    #lesson-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10,10,26,0.96);
+      border-bottom: 2px solid var(--neon-blue);
+      box-shadow: 0 2px 20px #00d4ff44;
+      padding: 0.55rem 1.2rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    #lesson-nav .nav-brand {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.85rem;
+      color: var(--neon-blue);
+      text-shadow: 0 0 8px #00d4ff88;
+      margin-right: 0.5rem;
+      white-space: nowrap;
+    }
+
+    #lesson-nav a {
+      font-size: 0.78rem;
+      padding: 0.3rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      text-decoration: none;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    #lesson-nav a:hover { border-color: var(--neon-gold); color: var(--neon-gold); background: #1a1a3a; }
+
+    #lesson-nav .nav-back { border-color: var(--neon-pink); color: var(--neon-pink); }
+    #lesson-nav .nav-back:hover { background: #ff006e22; }
+
+    /* ── Page hero ──────────────────────────────────────────────────────── */
+    .lesson-hero {
+      text-align: center;
+      padding: 3rem 1rem 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .lesson-hero h1 {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(1.6rem, 4vw, 3rem);
+      color: var(--neon-gold);
+      text-shadow: 0 0 12px #ffd70077, 0 0 30px #ffd70033;
+      letter-spacing: 3px;
+      margin-bottom: 0.5rem;
+    }
+    .lesson-hero p {
+      color: var(--text-dim);
+      font-size: 1.05rem;
+    }
+
+    /* ── Wrapper ────────────────────────────────────────────────────────── */
+    .lesson-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 1.5rem 4rem;
+    }
+
+    /* ── Sections ───────────────────────────────────────────────────────── */
+    .lesson-section {
+      margin-top: 3.5rem;
+      padding-top: 1.5rem;
+      border-top: 3px solid var(--border);
+    }
+    .lesson-section:nth-child(1) { border-top-color: var(--neon-gold); }
+    .lesson-section:nth-child(2) { border-top-color: var(--neon-blue); }
+    .lesson-section:nth-child(3) { border-top-color: var(--neon-pink); }
+    .lesson-section:nth-child(4) { border-top-color: var(--neon-green); }
+    .lesson-section:nth-child(5) { border-top-color: var(--neon-purple); }
+    .lesson-section:nth-child(6) { border-top-color: var(--neon-gold); }
+
+    .section-title {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(1.1rem, 2.5vw, 1.7rem);
+      color: var(--neon-gold);
+      text-shadow: 0 0 10px #ffd70066;
+      letter-spacing: 2px;
+      margin-bottom: 1.2rem;
+    }
+
+    /* ── Info panels ────────────────────────────────────────────────────── */
+    .info-panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+    .info-panel h3 {
+      color: var(--neon-blue);
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    /* ── Math highlight ─────────────────────────────────────────────────── */
+    .math {
+      font-family: 'Courier New', monospace;
+      color: var(--neon-gold);
+      background: #12122a;
+      padding: 0.1em 0.35em;
+      border-radius: 4px;
+      font-size: 1em;
+    }
+
+    .math-block {
+      font-family: 'Courier New', monospace;
+      color: var(--neon-gold);
+      background: #12122a;
+      border: 1px solid #ffd70044;
+      border-left: 4px solid var(--neon-gold);
+      border-radius: 6px;
+      padding: 0.9rem 1.2rem;
+      margin: 0.75rem 0;
+      font-size: 1.05rem;
+      line-height: 2;
+      overflow-x: auto;
+    }
+
+    /* ── SVG wrappers ───────────────────────────────────────────────────── */
+    .svg-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: center;
+      margin: 1.25rem 0;
+    }
+
+    .svg-card {
+      background: #12122a;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .svg-card .svg-label {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.75rem;
+      color: var(--neon-blue);
+      letter-spacing: 1px;
+      text-align: center;
+    }
+
+    /* ── Triangle SVG animations ────────────────────────────────────────── */
+    @keyframes drawLine {
+      from { stroke-dashoffset: 400; }
+      to   { stroke-dashoffset: 0;   }
+    }
+
+    .anim-altitude {
+      stroke-dasharray: 400;
+      stroke-dashoffset: 400;
+      animation: drawLine 1.4s ease-in-out 0.6s forwards;
+    }
+
+    .anim-diagonal {
+      stroke-dasharray: 400;
+      stroke-dashoffset: 400;
+      animation: drawLine 1.2s ease-in-out 0.4s forwards;
+    }
+
+    .anim-highlight {
+      opacity: 0;
+      animation: fadeIn 0.5s ease 1.8s forwards;
+    }
+    @keyframes fadeIn { to { opacity: 1; } }
+
+    /* ── Quadrant grid ──────────────────────────────────────────────────── */
+    .quad-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+    .quad-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+    }
+    .quad-card h4 {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.85rem;
+      margin-bottom: 0.4rem;
+    }
+
+    /* ── ASTC mnemonic ──────────────────────────────────────────────────── */
+    .astc-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+      margin: 1rem 0;
+    }
+    .astc-cell {
+      background: #12122a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.9rem;
+      text-align: center;
+    }
+    .astc-cell .astc-letter {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.8rem;
+      font-weight: 900;
+      line-height: 1;
+      margin-bottom: 0.25rem;
+    }
+    .astc-cell .astc-name {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      margin-bottom: 0.2rem;
+    }
+    .astc-cell .astc-pos {
+      font-size: 0.85rem;
+      font-family: 'Courier New', monospace;
+    }
+    .astc-q1 { border-color: var(--neon-green); }
+    .astc-q1 .astc-letter { color: var(--neon-green); text-shadow: 0 0 10px #39ff1477; }
+    .astc-q2 { border-color: var(--neon-pink); }
+    .astc-q2 .astc-letter { color: var(--neon-pink); text-shadow: 0 0 10px #ff006e77; }
+    .astc-q3 { border-color: var(--neon-gold); }
+    .astc-q3 .astc-letter { color: var(--neon-gold); text-shadow: 0 0 10px #ffd70077; }
+    .astc-q4 { border-color: var(--neon-blue); }
+    .astc-q4 .astc-letter { color: var(--neon-blue); text-shadow: 0 0 10px #00d4ff77; }
+
+    /* ── Tables ─────────────────────────────────────────────────────────── */
+    .trig-table-wrap {
+      overflow-x: auto;
+      margin: 1.2rem 0;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    .trig-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      min-width: 600px;
+    }
+    .trig-table thead tr {
+      background: #1a1a3a;
+    }
+    .trig-table th {
+      padding: 0.6rem 0.75rem;
+      text-align: center;
+      font-family: 'Orbitron', monospace;
+      font-size: 0.72rem;
+      color: var(--neon-gold);
+      border-bottom: 2px solid var(--neon-gold);
+      letter-spacing: 1px;
+      white-space: nowrap;
+    }
+    .trig-table td {
+      padding: 0.5rem 0.75rem;
+      text-align: center;
+      border-bottom: 1px solid #2a2a5a;
+      font-family: 'Courier New', monospace;
+      color: var(--text);
+      white-space: nowrap;
+    }
+    .trig-table tr:hover td { background: #1a1a3a; }
+    .trig-table .col-angle { color: var(--neon-blue); font-weight: 700; }
+    .trig-table .col-rad   { color: var(--neon-purple); }
+    .trig-table .col-sin   { color: var(--neon-pink); }
+    .trig-table .col-cos   { color: var(--neon-blue); }
+    .trig-table .col-tan   { color: var(--neon-gold); }
+    .trig-table .col-csc   { color: var(--neon-purple); }
+    .trig-table .col-sec   { color: var(--neon-green); }
+    .trig-table .col-cot   { color: #ff8c00; }
+    .trig-table .undef     { color: var(--text-dim); font-style: italic; }
+    .trig-table tr:nth-child(odd) td  { background: #0d0d20; }
+    .trig-table tr:nth-child(even) td { background: #10102a; }
+    .trig-table tr:hover td { background: #1e1e40 !important; }
+
+    /* ── Conversion table ───────────────────────────────────────────────── */
+    .conv-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    .conv-table th {
+      padding: 0.6rem 1rem;
+      font-family: 'Orbitron', monospace;
+      font-size: 0.75rem;
+      color: var(--neon-gold);
+      border-bottom: 2px solid var(--neon-gold);
+      background: #1a1a3a;
+      text-align: center;
+    }
+    .conv-table td {
+      padding: 0.45rem 1rem;
+      text-align: center;
+      border-bottom: 1px solid #2a2a5a;
+      font-family: 'Courier New', monospace;
+    }
+    .conv-table tr:nth-child(odd) td  { background: #0d0d20; }
+    .conv-table tr:nth-child(even) td { background: #10102a; }
+    .conv-table .col-deg { color: var(--neon-blue); }
+    .conv-table .col-rad { color: var(--neon-purple); }
+
+    /* ── Trig graphs ────────────────────────────────────────────────────── */
+    .graphs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.2rem;
+      margin: 1.2rem 0;
+    }
+    .graph-card {
+      background: #12122a;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.75rem;
+    }
+    .graph-card .graph-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.78rem;
+      text-align: center;
+      margin-bottom: 0.5rem;
+      letter-spacing: 1px;
+    }
+    .graph-card svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    /* ── Reference unit circle ──────────────────────────────────────────── */
+    #ref-circle-svg {
+      display: block;
+      max-width: 560px;
+      margin: 1rem auto;
+      width: 100%;
+      height: auto;
+    }
+
+    /* ── Coterminal examples ────────────────────────────────────────────── */
+    .coterm-examples {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin: 0.75rem 0;
+    }
+    .coterm-tag {
+      background: var(--panel);
+      border: 1px solid var(--neon-purple);
+      border-radius: 6px;
+      padding: 0.4rem 0.9rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      color: var(--neon-purple);
+    }
+
+    /* ── SOHCAHTOA boxes ────────────────────────────────────────────────── */
+    .soh-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      margin: 1rem 0;
+    }
+    @media (max-width: 560px) { .soh-grid { grid-template-columns: 1fr; } }
+    .soh-box {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.9rem;
+      text-align: center;
+    }
+    .soh-box .soh-letter {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+    }
+    .soh-box .soh-formula {
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      color: var(--neon-gold);
+    }
+    .soh-sin { border-color: var(--neon-pink); }
+    .soh-sin .soh-letter { color: var(--neon-pink); }
+    .soh-cos { border-color: var(--neon-blue); }
+    .soh-cos .soh-letter { color: var(--neon-blue); }
+    .soh-tan { border-color: var(--neon-gold); }
+    .soh-tan .soh-letter { color: var(--neon-gold); }
+
+    /* ── Scroll-to-top ──────────────────────────────────────────────────── */
+    #scroll-top {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--panel);
+      border: 2px solid var(--neon-blue);
+      color: var(--neon-blue);
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 12px #00d4ff44;
+      transition: all 0.2s;
+      z-index: 200;
+      text-decoration: none;
+    }
+    #scroll-top.show { display: flex; }
+    #scroll-top:hover { background: #00d4ff22; }
+
+    @media (max-width: 700px) {
+      .svg-row { flex-direction: column; align-items: center; }
+      .astc-grid { grid-template-columns: 1fr 1fr; }
+      .soh-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════ NAV ══ -->
+<nav id="lesson-nav">
+  <span class="nav-brand">UNIT CIRCLE</span>
+  <a href="#sec-triangles">Special Triangles</a>
+  <a href="#sec-sohcahtoa">SOHCAHTOA</a>
+  <a href="#sec-quadrants">Quadrants</a>
+  <a href="#sec-graphs">Trig Graphs</a>
+  <a href="#sec-radians">Radians</a>
+  <a href="#sec-reference">Reference</a>
+  <a href="game.html" class="nav-back">&#9654; Play Game</a>
+  <a href="index.html" class="nav-back">&#8962; Home</a>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════ HERO ══ -->
+<div class="lesson-hero">
+  <h1>Unit Circle &mdash; Complete Lesson</h1>
+  <p>Master special triangles, SOHCAHTOA, trig graphs, and the full unit circle</p>
+</div>
+
+<div class="lesson-wrap">
+
+  <!-- ═══════════════════════════════════════════ SECTION 1: TRIANGLES ══ -->
+  <section class="lesson-section" id="sec-triangles">
+    <h2 class="section-title">1 &mdash; Special Triangles</h2>
+
+    <div class="info-panel">
+      <p>Two special right triangles give us all the exact trig values on the unit circle. Every angle on the circle is just one of these triangles placed in a quadrant.</p>
+    </div>
+
+    <div class="svg-row">
+
+      <!-- 30-60-90 SVG -->
+      <div class="svg-card">
+        <span class="svg-label">30 &ndash; 60 &ndash; 90 Triangle</span>
+        <svg viewBox="0 0 360 280" width="360" height="280"
+             style="background:#12122a; border-radius:8px;" aria-label="30-60-90 triangle diagram">
+
+          <!-- annotations top -->
+          <text x="180" y="22" text-anchor="middle" fill="#7070a0" font-size="11" font-family="Courier New">
+            Start: equilateral triangle, all sides = 2, all angles = 60°
+          </text>
+          <text x="180" y="38" text-anchor="middle" fill="#7070a0" font-size="11" font-family="Courier New">
+            Split in half &#8594; 30-60-90 triangle
+          </text>
+
+          <!-- equilateral ghost triangle -->
+          <polygon points="180,55 60,240 300,240"
+                   fill="none" stroke="#2a2a5a" stroke-width="1.5" stroke-dasharray="6 4"/>
+
+          <!-- right triangle highlight fill -->
+          <polygon points="180,55 60,240 180,240"
+                   fill="#1e1e40" class="anim-highlight"/>
+
+          <!-- right triangle solid outline -->
+          <polyline points="180,55 60,240 180,240 180,55"
+                    fill="none" stroke="#00d4ff" stroke-width="2.2" class="anim-highlight"/>
+
+          <!-- right angle marker -->
+          <rect x="168" y="224" width="12" height="12"
+                fill="none" stroke="#00d4ff" stroke-width="1.5" class="anim-highlight"/>
+
+          <!-- altitude (animated) -->
+          <line x1="180" y1="55" x2="180" y2="240"
+                stroke="#39ff14" stroke-width="2.5"
+                class="anim-altitude"/>
+
+          <!-- side labels -->
+          <!-- hypotenuse = 2 (left side of equilateral, used as hyp) -->
+          <text x="108" y="158" fill="#ffd700" font-size="15" font-family="Courier New"
+                transform="rotate(-59,108,158)">2</text>
+          <!-- short leg = 1 (bottom from center to left) -->
+          <text x="116" y="255" fill="#ffd700" font-size="15" font-family="Courier New">1</text>
+          <!-- long leg = √3 (altitude) -->
+          <text x="186" y="158" fill="#ffd700" font-size="15" font-family="Courier New">√3</text>
+
+          <!-- angle labels -->
+          <!-- 30° at top -->
+          <text x="185" y="78" fill="#00d4ff" font-size="13" font-family="Courier New">30°</text>
+          <!-- 60° at bottom-left -->
+          <text x="68" y="230" fill="#00d4ff" font-size="13" font-family="Courier New">60°</text>
+          <!-- 90° at bottom-right (origin of right angle) -->
+          <text x="188" y="222" fill="#00d4ff" font-size="13" font-family="Courier New">90°</text>
+
+          <!-- ghost right vertex label -->
+          <text x="248" y="255" fill="#2a2a5a" font-size="12" font-family="Courier New">(mirror)</text>
+        </svg>
+      </div>
+
+      <!-- 45-45-90 SVG -->
+      <div class="svg-card">
+        <span class="svg-label">45 &ndash; 45 &ndash; 90 Triangle</span>
+        <svg viewBox="0 0 360 280" width="360" height="280"
+             style="background:#12122a; border-radius:8px;" aria-label="45-45-90 triangle diagram">
+
+          <!-- annotations -->
+          <text x="180" y="22" text-anchor="middle" fill="#7070a0" font-size="11" font-family="Courier New">
+            Start: square with side 1
+          </text>
+          <text x="180" y="38" text-anchor="middle" fill="#7070a0" font-size="11" font-family="Courier New">
+            Split diagonally &#8594; 45-45-90 triangle
+          </text>
+
+          <!-- square ghost -->
+          <rect x="80" y="60" width="180" height="180"
+                fill="none" stroke="#2a2a5a" stroke-width="1.5" stroke-dasharray="6 4"/>
+
+          <!-- triangle highlight fill -->
+          <polygon points="80,60 260,60 80,240"
+                   fill="#1e1e40" class="anim-highlight"/>
+
+          <!-- triangle solid outline -->
+          <polyline points="80,60 260,60 80,240 80,60"
+                    fill="none" stroke="#ff006e" stroke-width="2.2" class="anim-highlight"/>
+
+          <!-- right angle marker at bottom-left -->
+          <rect x="80" y="228" width="12" height="12"
+                fill="none" stroke="#ff006e" stroke-width="1.5" class="anim-highlight"/>
+
+          <!-- diagonal line (animated) — top-right to bottom-left -->
+          <line x1="260" y1="60" x2="80" y2="240"
+                stroke="#39ff14" stroke-width="2.5"
+                class="anim-diagonal"/>
+
+          <!-- side labels -->
+          <!-- top = 1 -->
+          <text x="164" y="52" fill="#ffd700" font-size="15" font-family="Courier New">1</text>
+          <!-- left = 1 -->
+          <text x="55" y="158" fill="#ffd700" font-size="15" font-family="Courier New">1</text>
+          <!-- hypotenuse = √2 -->
+          <text x="172" y="162" fill="#ffd700" font-size="15" font-family="Courier New"
+                transform="rotate(45,172,162)">√2</text>
+
+          <!-- angle labels -->
+          <text x="95"  y="82"  fill="#00d4ff" font-size="13" font-family="Courier New">45°</text>
+          <text x="220" y="76"  fill="#00d4ff" font-size="13" font-family="Courier New">45°</text>
+          <text x="86"  y="224" fill="#00d4ff" font-size="13" font-family="Courier New">90°</text>
+        </svg>
+      </div>
+    </div><!-- /svg-row -->
+
+    <!-- Summary table -->
+    <div class="info-panel" style="margin-top:1rem;">
+      <h3>Quick Reference</h3>
+      <div class="trig-table-wrap" style="border:none; margin:0;">
+        <table class="trig-table" style="min-width:0;">
+          <thead>
+            <tr>
+              <th>Triangle</th>
+              <th>Angles</th>
+              <th>Short&nbsp;Leg</th>
+              <th>Long&nbsp;Leg</th>
+              <th>Hypotenuse</th>
+              <th>Origin</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="color:var(--neon-gold);">30-60-90</td>
+              <td>30°, 60°, 90°</td>
+              <td class="col-sin">1</td>
+              <td class="col-cos">√3</td>
+              <td class="col-tan">2</td>
+              <td style="color:var(--text-dim);">Half equilateral (side 2)</td>
+            </tr>
+            <tr>
+              <td style="color:var(--neon-gold);">45-45-90</td>
+              <td>45°, 45°, 90°</td>
+              <td class="col-sin">1</td>
+              <td class="col-cos">1</td>
+              <td class="col-tan">√2</td>
+              <td style="color:var(--text-dim);">Diagonal of unit square</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="info-panel">
+      <h3>Why these triangles?</h3>
+      <p>On the unit circle the hypotenuse is always <span class="math">r = 1</span>. Dividing every side of the 30-60-90 triangle by 2 gives sides <span class="math">1/2</span>, <span class="math">√3/2</span>, <span class="math">1</span>. Those are exactly the <span class="math">sin</span> and <span class="math">cos</span> values at 30° and 60°. Dividing the 45-45-90 triangle by √2 gives sides <span class="math">√2/2</span>, <span class="math">√2/2</span>, <span class="math">1</span> — the values at 45°.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ SECTION 2: SOHCAHTOA ══ -->
+  <section class="lesson-section" id="sec-sohcahtoa">
+    <h2 class="section-title">2 &mdash; SOHCAHTOA &#8594; Unit Circle</h2>
+
+    <div class="info-panel">
+      <p>SOHCAHTOA is the mnemonic for the three basic trig ratios in a right triangle. When the hypotenuse equals 1 (the unit circle radius), the ratios simplify beautifully.</p>
+    </div>
+
+    <div class="soh-grid">
+      <div class="soh-box soh-sin">
+        <div class="soh-letter">SOH</div>
+        <div class="soh-formula">sin θ = Opposite / Hypotenuse</div>
+      </div>
+      <div class="soh-box soh-cos">
+        <div class="soh-letter">CAH</div>
+        <div class="soh-formula">cos θ = Adjacent / Hypotenuse</div>
+      </div>
+      <div class="soh-box soh-tan">
+        <div class="soh-letter">TOA</div>
+        <div class="soh-formula">tan θ = Opposite / Adjacent</div>
+      </div>
+    </div>
+
+    <div class="math-block">
+      When r = 1 (unit circle):
+      sin θ = y / 1 = y
+      cos θ = x / 1 = x
+      tan θ = y / x
+    </div>
+
+    <div class="svg-row">
+      <div class="svg-card">
+        <span class="svg-label">Unit Circle Right Triangle</span>
+        <svg viewBox="0 0 300 300" width="300" height="300"
+             style="background:#12122a; border-radius:8px;" aria-label="unit circle with right triangle">
+
+          <!-- grid -->
+          <line x1="150" y1="20" x2="150" y2="280" stroke="#1e1e40" stroke-width="1"/>
+          <line x1="20" y1="150" x2="280" y2="150" stroke="#1e1e40" stroke-width="1"/>
+
+          <!-- unit circle -->
+          <circle cx="150" cy="150" r="110" fill="none" stroke="#2a2a5a" stroke-width="1.5"/>
+
+          <!-- angle arc -->
+          <path d="M 178,150 A 28,28 0 0,0 169.7,130.3" fill="none" stroke="#ffd700" stroke-width="1.5"/>
+          <text x="185" y="143" fill="#ffd700" font-size="13" font-family="Courier New">θ</text>
+
+          <!-- point P at ~45° -->
+          <!-- cos45=√2/2≈0.707, sin45=√2/2≈0.707 — SVG: x=150+110*0.707≈228, y=150-110*0.707≈72 -->
+          <!-- right triangle legs -->
+          <!-- x-leg: from origin to foot -->
+          <line x1="150" y1="150" x2="228" y2="150" stroke="#00d4ff" stroke-width="2" stroke-dasharray="5 3"/>
+          <!-- y-leg: from foot to P -->
+          <line x1="228" y1="150" x2="228" y2="72" stroke="#ff006e" stroke-width="2" stroke-dasharray="5 3"/>
+          <!-- hypotenuse r=1 -->
+          <line x1="150" y1="150" x2="228" y2="72" stroke="#39ff14" stroke-width="2.2"/>
+          <!-- right angle at foot -->
+          <rect x="218" y="148" width="10" height="10" fill="none" stroke="#7070a0" stroke-width="1.5" transform="translate(0,-10)"/>
+
+          <!-- axis labels -->
+          <text x="275" y="155" fill="#7070a0" font-size="12" font-family="Courier New">+x</text>
+          <text x="20"  y="155" fill="#7070a0" font-size="12" font-family="Courier New">-x</text>
+          <text x="155" y="28"  fill="#7070a0" font-size="12" font-family="Courier New">+y</text>
+          <text x="155" y="278" fill="#7070a0" font-size="12" font-family="Courier New">-y</text>
+
+          <!-- labels on legs -->
+          <text x="185" y="168" fill="#00d4ff" font-size="12" font-family="Courier New">x (cos θ)</text>
+          <text x="232" y="115" fill="#ff006e" font-size="12" font-family="Courier New">y</text>
+          <text x="232" y="128" fill="#ff006e" font-size="12" font-family="Courier New">(sin θ)</text>
+
+          <!-- r=1 label -->
+          <text x="172" y="104" fill="#39ff14" font-size="12" font-family="Courier New"
+                transform="rotate(-45,172,104)">r = 1</text>
+
+          <!-- point P -->
+          <circle cx="228" cy="72" r="5" fill="#ffd700"/>
+          <text x="233" y="68" fill="#ffd700" font-size="13" font-family="Courier New">P(x, y)</text>
+
+          <!-- origin dot -->
+          <circle cx="150" cy="150" r="3" fill="#7070a0"/>
+          <text x="133" y="165" fill="#7070a0" font-size="11" font-family="Courier New">O</text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="math-block">
+      sin θ = y      → the y-coordinate of a point on the unit circle
+      cos θ = x      → the x-coordinate of a point on the unit circle
+      tan θ = y / x  → slope of the radius line from origin to P
+      csc θ = 1/y    → reciprocal of sin
+      sec θ = 1/x    → reciprocal of cos
+      cot θ = x/y    → reciprocal of tan
+    </div>
+
+    <div class="info-panel">
+      <h3>Key insight</h3>
+      <p>Every point on the unit circle can be written as <span class="math">(cos θ, sin θ)</span>. The angle <span class="math">θ</span> is measured counterclockwise from the positive x-axis. This is why memorizing the coordinates <em>is</em> memorizing the trig values.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ SECTION 3: QUADRANTS ══ -->
+  <section class="lesson-section" id="sec-quadrants">
+    <h2 class="section-title">3 &mdash; Four Quadrants &amp; Signs</h2>
+
+    <div class="info-panel">
+      <p>The unit circle wraps the special triangles around all four quadrants. Depending on the quadrant, x and y change sign — which changes the signs of all six trig functions.</p>
+    </div>
+
+    <!-- ASTC mnemonic -->
+    <h3 style="color:var(--neon-blue); margin-bottom:0.5rem;">
+      Mnemonic: "All Students Take Calculus"
+    </h3>
+    <p style="color:var(--text-dim); margin-bottom:0.75rem; font-size:0.9rem;">
+      Tells you which functions are <em>positive</em> in each quadrant (all others are negative).
+    </p>
+
+    <div class="astc-grid">
+      <div class="astc-cell astc-q2">
+        <div class="astc-name">Quadrant II (90°–180°)</div>
+        <div class="astc-letter">S</div>
+        <div class="astc-name">Students</div>
+        <div class="astc-pos" style="color:var(--neon-pink);">sin (+), csc (+)</div>
+        <div class="astc-pos" style="color:var(--text-dim);">cos (−), tan (−)</div>
+        <div class="astc-pos" style="color:var(--text-dim); font-size:0.78rem;">(x &lt; 0, y &gt; 0)</div>
+      </div>
+      <div class="astc-cell astc-q1">
+        <div class="astc-name">Quadrant I (0°–90°)</div>
+        <div class="astc-letter">A</div>
+        <div class="astc-name">All</div>
+        <div class="astc-pos" style="color:var(--neon-green);">ALL positive</div>
+        <div class="astc-pos" style="color:var(--text-dim); font-size:0.78rem;">(x &gt; 0, y &gt; 0)</div>
+      </div>
+      <div class="astc-cell astc-q3">
+        <div class="astc-name">Quadrant III (180°–270°)</div>
+        <div class="astc-letter">T</div>
+        <div class="astc-name">Take</div>
+        <div class="astc-pos" style="color:var(--neon-gold);">tan (+), cot (+)</div>
+        <div class="astc-pos" style="color:var(--text-dim);">sin (−), cos (−)</div>
+        <div class="astc-pos" style="color:var(--text-dim); font-size:0.78rem;">(x &lt; 0, y &lt; 0)</div>
+      </div>
+      <div class="astc-cell astc-q4">
+        <div class="astc-name">Quadrant IV (270°–360°)</div>
+        <div class="astc-letter">C</div>
+        <div class="astc-name">Calculus</div>
+        <div class="astc-pos" style="color:var(--neon-blue);">cos (+), sec (+)</div>
+        <div class="astc-pos" style="color:var(--text-dim);">sin (−), tan (−)</div>
+        <div class="astc-pos" style="color:var(--text-dim); font-size:0.78rem;">(x &gt; 0, y &lt; 0)</div>
+      </div>
+    </div>
+
+    <!-- 4-quadrant mini SVG -->
+    <div class="svg-row" style="margin-top:1.5rem;">
+      <div class="svg-card">
+        <span class="svg-label">Signs in Each Quadrant</span>
+        <svg viewBox="0 0 400 400" width="400" height="400"
+             style="background:#12122a; border-radius:8px;" aria-label="quadrant signs diagram">
+
+          <!-- axes -->
+          <line x1="200" y1="20" x2="200" y2="380" stroke="#2a2a5a" stroke-width="2"/>
+          <line x1="20" y1="200" x2="380" y2="200" stroke="#2a2a5a" stroke-width="2"/>
+
+          <!-- axis arrow heads -->
+          <polygon points="200,16 195,28 205,28" fill="#2a2a5a"/>
+          <polygon points="200,384 195,372 205,372" fill="#2a2a5a"/>
+          <polygon points="384,200 372,195 372,205" fill="#2a2a5a"/>
+          <polygon points="16,200 28,195 28,205" fill="#2a2a5a"/>
+
+          <!-- axis labels -->
+          <text x="383" y="196" fill="#7070a0" font-size="12" font-family="Courier New">+x</text>
+          <text x="10"  y="196" fill="#7070a0" font-size="12" font-family="Courier New">-x</text>
+          <text x="205" y="15"  fill="#7070a0" font-size="12" font-family="Courier New">+y</text>
+          <text x="205" y="392" fill="#7070a0" font-size="12" font-family="Courier New">-y</text>
+
+          <!-- Q1 — 30-60-90 triangle (ref angle 60°) -->
+          <!-- triangle: origin, foot at (165,200), point at (165,116) -->
+          <polygon points="200,200 365,200 365,116"
+                   fill="#39ff1411" stroke="#39ff14" stroke-width="1.5"/>
+          <text x="300" y="192" fill="#39ff14" font-size="11" font-family="Courier New">x = +√3/2</text>
+          <text x="368" y="162" fill="#ff006e" font-size="11" font-family="Courier New">y = +1/2</text>
+          <text x="255" y="75" fill="#39ff14" font-size="14" font-family="Orbitron" letter-spacing="1">I (ALL+)</text>
+
+          <!-- Q2 — 30-60-90 (150°, ref=30°) -->
+          <!-- triangle: origin, foot at (-165+200=35,200), point (35,116) -->
+          <polygon points="200,200 35,200 35,116"
+                   fill="#ff006e11" stroke="#ff006e" stroke-width="1.5"/>
+          <text x="38" y="192" fill="#00d4ff" font-size="11" font-family="Courier New">x = -√3/2</text>
+          <text x="38" y="145" fill="#ff006e" font-size="11" font-family="Courier New">y = +1/2</text>
+          <text x="70" y="75" fill="#ff006e" font-size="14" font-family="Orbitron" letter-spacing="1">II (sin+)</text>
+
+          <!-- Q3 — 45-45-90 (225°, ref=45°) -->
+          <!-- triangle: origin, foot at (35,200+115=315?), use 200-113=87 for x and 200+113=313 for y -->
+          <polygon points="200,200 87,200 87,313"
+                   fill="#ffd70011" stroke="#ffd700" stroke-width="1.5"/>
+          <text x="28" y="210" fill="#00d4ff" font-size="11" font-family="Courier New">x = -√2/2</text>
+          <text x="28" y="320" fill="#ff006e" font-size="11" font-family="Courier New">y = -√2/2</text>
+          <text x="60" y="360" fill="#ffd700" font-size="14" font-family="Orbitron" letter-spacing="1">III (tan+)</text>
+
+          <!-- Q4 — 45-45-90 (315°, ref=45°) -->
+          <polygon points="200,200 313,200 313,313"
+                   fill="#00d4ff11" stroke="#00d4ff" stroke-width="1.5"/>
+          <text x="230" y="210" fill="#00d4ff" font-size="11" font-family="Courier New">x = +√2/2</text>
+          <text x="316" y="320" fill="#ff006e" font-size="11" font-family="Courier New">y = -√2/2</text>
+          <text x="245" y="360" fill="#00d4ff" font-size="14" font-family="Orbitron" letter-spacing="1">IV (cos+)</text>
+
+          <!-- unit circle overlay -->
+          <circle cx="200" cy="200" r="90" fill="none" stroke="#2a2a5a" stroke-width="1" stroke-dasharray="4 4"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- 17-angle table -->
+    <h3 style="color:var(--neon-blue); margin: 1.5rem 0 0.75rem;">All 17 Canonical Angles</h3>
+    <div class="trig-table-wrap">
+      <table class="trig-table" id="angle-table">
+        <thead>
+          <tr>
+            <th>θ (deg)</th>
+            <th>θ (rad)</th>
+            <th>sin θ</th>
+            <th>cos θ</th>
+            <th>tan θ</th>
+            <th>csc θ</th>
+            <th>sec θ</th>
+            <th>cot θ</th>
+          </tr>
+        </thead>
+        <tbody id="angle-tbody">
+          <!-- filled by JS -->
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ SECTION 4: GRAPHS ══════ -->
+  <section class="lesson-section" id="sec-graphs">
+    <h2 class="section-title">4 &mdash; Trig Graphs</h2>
+
+    <div class="info-panel">
+      <p>All six trig functions are periodic. Understanding their graphs helps predict behavior and spot identities.</p>
+    </div>
+
+    <div class="graphs-grid" id="graphs-container">
+      <!-- Injected by JS -->
+    </div>
+
+    <div class="info-panel" style="margin-top:0.5rem;">
+      <h3>Key graph properties</h3>
+      <ul style="padding-left:1.2rem; line-height:2;">
+        <li><span class="math" style="color:var(--neon-pink);">sin</span> &amp; <span class="math" style="color:var(--neon-blue);">cos</span>: period <span class="math">2π</span>, range <span class="math">[-1, 1]</span>, no asymptotes</li>
+        <li><span class="math" style="color:var(--neon-gold);">tan</span>: period <span class="math">π</span>, vertical asymptotes at <span class="math">x = π/2 + nπ</span></li>
+        <li><span class="math" style="color:var(--neon-purple);">csc</span>: reciprocal of sin — asymptotes where sin = 0</li>
+        <li><span class="math" style="color:var(--neon-green);">sec</span>: reciprocal of cos — asymptotes where cos = 0</li>
+        <li><span class="math" style="color:#ff8c00;">cot</span>: period <span class="math">π</span>, asymptotes where sin = 0</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ SECTION 5: RADIANS ══════ -->
+  <section class="lesson-section" id="sec-radians">
+    <h2 class="section-title">5 &mdash; Radians vs Degrees</h2>
+
+    <div class="info-panel">
+      <h3>What is a radian?</h3>
+      <p>A radian is the angle whose arc length equals the radius. When you travel along the circle a distance equal to <span class="math">r</span>, you've swept through exactly <span class="math">1 radian</span>.</p>
+    </div>
+
+    <div class="svg-row">
+      <div class="svg-card">
+        <span class="svg-label">Arc Length = Radius = 1 Radian</span>
+        <svg viewBox="0 0 300 240" width="300" height="240"
+             style="background:#12122a; border-radius:8px;" aria-label="radian definition diagram">
+          <!-- circle -->
+          <circle cx="150" cy="140" r="90" fill="none" stroke="#2a2a5a" stroke-width="1.5"/>
+
+          <!-- one radian arc (≈57.3°) highlighted -->
+          <!-- arc from 0° to 57.3°: start (240,140), end at 57.3° = (150+90cos57.3, 140-90sin57.3) = (198.7,64.4) -->
+          <path d="M 240,140 A 90,90 0 0,0 198.7,64.4"
+                fill="none" stroke="#ffd700" stroke-width="3.5"/>
+
+          <!-- radius line 1 -->
+          <line x1="150" y1="140" x2="240" y2="140" stroke="#39ff14" stroke-width="2.5"/>
+          <!-- radius line 2 -->
+          <line x1="150" y1="140" x2="198.7" y2="64.4" stroke="#39ff14" stroke-width="2.5"/>
+
+          <!-- labels -->
+          <text x="188" y="136" fill="#39ff14" font-size="12" font-family="Courier New">r</text>
+          <text x="168" y="98"  fill="#39ff14" font-size="12" font-family="Courier New">r</text>
+          <text x="224" y="108" fill="#ffd700" font-size="12" font-family="Courier New">arc = r</text>
+
+          <!-- angle arc label -->
+          <path d="M 200,140 A 50,50 0 0,0 177.5,96.7"
+                fill="none" stroke="#ffd700" stroke-width="1" stroke-dasharray="3 2"/>
+          <text x="207" y="122" fill="#ffd700" font-size="13" font-family="Courier New">1 rad</text>
+          <text x="170" y="116" fill="#7070a0" font-size="11" font-family="Courier New">≈57.3°</text>
+
+          <!-- center dot -->
+          <circle cx="150" cy="140" r="3" fill="#7070a0"/>
+
+          <!-- annotation -->
+          <text x="150" y="22" text-anchor="middle" fill="#7070a0" font-size="11" font-family="Courier New">
+            When arc length = radius → angle = 1 radian
+          </text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="math-block">
+      360° = 2π radians
+      180° = π  radians
+      1°   = π/180 radians
+      1 rad = 180°/π ≈ 57.3°
+
+      Convert deg → rad:  multiply by π/180
+      Convert rad → deg:  multiply by 180/π
+    </div>
+
+    <!-- Conversion table -->
+    <h3 style="color:var(--neon-blue); margin:1.2rem 0 0.75rem;">Degrees ↔ Radians Conversion</h3>
+    <div class="trig-table-wrap" style="max-width:420px; margin:0 auto 1.5rem;">
+      <table class="conv-table">
+        <thead><tr><th>Degrees</th><th>Radians</th></tr></thead>
+        <tbody>
+          <tr><td class="col-deg">0°</td><td class="col-rad">0</td></tr>
+          <tr><td class="col-deg">30°</td><td class="col-rad">π/6</td></tr>
+          <tr><td class="col-deg">45°</td><td class="col-rad">π/4</td></tr>
+          <tr><td class="col-deg">60°</td><td class="col-rad">π/3</td></tr>
+          <tr><td class="col-deg">90°</td><td class="col-rad">π/2</td></tr>
+          <tr><td class="col-deg">120°</td><td class="col-rad">2π/3</td></tr>
+          <tr><td class="col-deg">135°</td><td class="col-rad">3π/4</td></tr>
+          <tr><td class="col-deg">150°</td><td class="col-rad">5π/6</td></tr>
+          <tr><td class="col-deg">180°</td><td class="col-rad">π</td></tr>
+          <tr><td class="col-deg">270°</td><td class="col-rad">3π/2</td></tr>
+          <tr><td class="col-deg">360°</td><td class="col-rad">2π</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Coterminal angles -->
+    <div class="info-panel">
+      <h3>Coterminal Angles</h3>
+      <p>Coterminal angles share the same terminal side — they point in the same direction but differ by full rotations of <span class="math">360° (2π)</span>.</p>
+      <div class="math-block">
+        Coterminal with θ:  θ + 360°·n  (degrees)
+                            θ + 2π·n    (radians)
+        where n is any integer (positive or negative)
+      </div>
+      <p style="margin-top:0.5rem; color:var(--text-dim);">Examples:</p>
+      <div class="coterm-examples">
+        <span class="coterm-tag">-30° ≡ 330°</span>
+        <span class="coterm-tag">390° ≡ 30°</span>
+        <span class="coterm-tag">-π/4 ≡ 7π/4</span>
+        <span class="coterm-tag">5π/2 ≡ π/2</span>
+        <span class="coterm-tag">720° ≡ 0°</span>
+        <span class="coterm-tag">-270° ≡ 90°</span>
+      </div>
+    </div>
+
+    <div class="info-panel">
+      <h3>Reference Angles</h3>
+      <p>The reference angle is the acute angle (≤ 90°) between the terminal side and the x-axis. It determines the <em>magnitude</em> of trig values — the quadrant determines the <em>sign</em>.</p>
+      <div class="math-block">
+        Q1: ref = θ
+        Q2: ref = 180° − θ
+        Q3: ref = θ − 180°
+        Q4: ref = 360° − θ
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ SECTION 6: REFERENCE ══ -->
+  <section class="lesson-section" id="sec-reference">
+    <h2 class="section-title">6 &mdash; Full Unit Circle Reference</h2>
+
+    <div class="info-panel">
+      <p>The complete unit circle with all 17 special angles. Every point is <span class="math">(cos θ, sin θ)</span>. Degree labels are outside, radian labels are further out, coordinates are inside.</p>
+    </div>
+
+    <!-- Large unit circle SVG (generated by JS) -->
+    <svg id="ref-circle-svg" viewBox="0 0 560 560"
+         style="background:#12122a; border-radius:12px; border:1px solid var(--border);"
+         aria-label="complete unit circle reference">
+      <!-- Generated by JS after DOM ready -->
+    </svg>
+
+    <!-- Full reference table -->
+    <h3 style="color:var(--neon-blue); margin: 2rem 0 0.75rem;">Complete Trig Values — All 17 Angles</h3>
+    <div class="trig-table-wrap">
+      <table class="trig-table" id="ref-table">
+        <thead>
+          <tr>
+            <th>θ (deg)</th>
+            <th>θ (rad)</th>
+            <th>sin θ</th>
+            <th>cos θ</th>
+            <th>tan θ</th>
+            <th>csc θ</th>
+            <th>sec θ</th>
+            <th>cot θ</th>
+          </tr>
+        </thead>
+        <tbody id="ref-tbody">
+          <!-- filled by JS -->
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</div><!-- /lesson-wrap -->
+
+<!-- scroll-to-top -->
+<a href="#" id="scroll-top" aria-label="Scroll to top">&#8679;</a>
+
+<!-- ══════════════════════════════════════════════════════════ SCRIPTS ══ -->
+<script>
+'use strict';
+
+/* ── Wait for trig-data.js to be available ─────────────────────────────── */
+window.addEventListener('DOMContentLoaded', function () {
+
+  const ANGLES = [0,30,45,60,90,120,135,150,180,210,225,240,270,300,315,330,360];
+
+  /* ── 1. Populate angle tables ─────────────────────────────────────────── */
+  function buildTable(tbodyId) {
+    const tbody = document.getElementById(tbodyId);
+    if (!tbody || typeof TRIG_DATA === 'undefined') return;
+    ANGLES.forEach(function(deg) {
+      const d = TRIG_DATA[deg];
+      if (!d) return;
+      const tr = document.createElement('tr');
+      function cell(val, cls) {
+        const td = document.createElement('td');
+        td.className = cls;
+        if (val === 'undefined') { td.className += ' undef'; td.textContent = 'undef'; }
+        else td.textContent = val;
+        return td;
+      }
+      tr.appendChild(cell(deg + '°',  'col-angle'));
+      tr.appendChild(cell(d.rad,      'col-rad'));
+      tr.appendChild(cell(d.sin,      'col-sin'));
+      tr.appendChild(cell(d.cos,      'col-cos'));
+      tr.appendChild(cell(d.tan,      'col-tan'));
+      tr.appendChild(cell(d.csc,      'col-csc'));
+      tr.appendChild(cell(d.sec,      'col-sec'));
+      tr.appendChild(cell(d.cot,      'col-cot'));
+      tbody.appendChild(tr);
+    });
+  }
+  buildTable('angle-tbody');
+  buildTable('ref-tbody');
+
+  /* ── 2. Trig graphs ───────────────────────────────────────────────────── */
+  const graphDefs = [
+    {
+      id: 'g-sin',  label: 'y = sin x',  color: '#ff006e',
+      fn: function(x){ return Math.sin(x); },
+      yMax: 1.5, yMin: -1.5, asymptotes: []
+    },
+    {
+      id: 'g-cos',  label: 'y = cos x',  color: '#00d4ff',
+      fn: function(x){ return Math.cos(x); },
+      yMax: 1.5, yMin: -1.5, asymptotes: []
+    },
+    {
+      id: 'g-tan',  label: 'y = tan x',  color: '#ffd700',
+      fn: function(x){ return Math.tan(x); },
+      yMax: 3, yMin: -3,
+      asymptotes: [-3*Math.PI/2, -Math.PI/2, Math.PI/2, 3*Math.PI/2]
+    },
+    {
+      id: 'g-csc',  label: 'y = csc x',  color: '#bf5af2',
+      fn: function(x){ var s=Math.sin(x); return Math.abs(s)<1e-9?NaN:1/s; },
+      yMax: 4, yMin: -4,
+      asymptotes: [-2*Math.PI, -Math.PI, 0, Math.PI, 2*Math.PI]
+    },
+    {
+      id: 'g-sec',  label: 'y = sec x',  color: '#39ff14',
+      fn: function(x){ var c=Math.cos(x); return Math.abs(c)<1e-9?NaN:1/c; },
+      yMax: 4, yMin: -4,
+      asymptotes: [-3*Math.PI/2, -Math.PI/2, Math.PI/2, 3*Math.PI/2]
+    },
+    {
+      id: 'g-cot',  label: 'y = cot x',  color: '#ff8c00',
+      fn: function(x){ var s=Math.sin(x); return Math.abs(s)<1e-9?NaN:Math.cos(x)/s; },
+      yMax: 3, yMin: -3,
+      asymptotes: [-2*Math.PI, -Math.PI, 0, Math.PI, 2*Math.PI]
+    }
+  ];
+
+  var W = 350, H = 200;
+  var PAD = { top:20, bottom:30, left:42, right:15 };
+  var xMin = -2*Math.PI, xMax = 2*Math.PI;
+
+  function mapX(x, yMaxLocal) {
+    return PAD.left + (x - xMin) / (xMax - xMin) * (W - PAD.left - PAD.right);
+  }
+  function mapY(y, yMaxArg, yMinArg) {
+    return H - PAD.bottom - (y - yMinArg) / (yMaxArg - yMinArg) * (H - PAD.top - PAD.bottom);
+  }
+
+  function buildGraph(def) {
+    var svgNS = 'http://www.w3.org/2000/svg';
+    var container = document.getElementById('graphs-container');
+
+    var card = document.createElement('div');
+    card.className = 'graph-card';
+
+    var title = document.createElement('div');
+    title.className = 'graph-title';
+    title.style.color = def.color;
+    title.textContent = def.label;
+    card.appendChild(title);
+
+    var svg = document.createElementNS(svgNS, 'svg');
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    svg.setAttribute('width', W);
+    svg.setAttribute('height', H);
+    svg.style.background = '#12122a';
+    svg.style.borderRadius = '6px';
+
+    var yMax = def.yMax, yMin = def.yMin;
+
+    /* grid lines */
+    // horizontal zero line
+    var xAxisY = mapY(0, yMax, yMin);
+    var axisH = document.createElementNS(svgNS, 'line');
+    axisH.setAttribute('x1', PAD.left); axisH.setAttribute('x2', W - PAD.right);
+    axisH.setAttribute('y1', xAxisY); axisH.setAttribute('y2', xAxisY);
+    axisH.setAttribute('stroke', '#2a2a5a'); axisH.setAttribute('stroke-width', '1.5');
+    svg.appendChild(axisH);
+
+    // y-axis
+    var yAxisX = mapX(0);
+    var axisV = document.createElementNS(svgNS, 'line');
+    axisV.setAttribute('x1', yAxisX); axisV.setAttribute('x2', yAxisX);
+    axisV.setAttribute('y1', PAD.top); axisV.setAttribute('y2', H - PAD.bottom);
+    axisV.setAttribute('stroke', '#2a2a5a'); axisV.setAttribute('stroke-width', '1.5');
+    svg.appendChild(axisV);
+
+    // x tick marks and labels: π/2 intervals
+    var ticks = [-2*Math.PI, -3*Math.PI/2, -Math.PI, -Math.PI/2, 0, Math.PI/2, Math.PI, 3*Math.PI/2, 2*Math.PI];
+    var tickLabels = ['-2π', '-3π/2', '-π', '-π/2', '0', 'π/2', 'π', '3π/2', '2π'];
+    ticks.forEach(function(t, i) {
+      var tx = mapX(t);
+      // tick
+      var tick = document.createElementNS(svgNS, 'line');
+      tick.setAttribute('x1', tx); tick.setAttribute('x2', tx);
+      tick.setAttribute('y1', xAxisY - 4); tick.setAttribute('y2', xAxisY + 4);
+      tick.setAttribute('stroke', '#3a3a6a'); tick.setAttribute('stroke-width', '1');
+      svg.appendChild(tick);
+      // vertical grid
+      var vg = document.createElementNS(svgNS, 'line');
+      vg.setAttribute('x1', tx); vg.setAttribute('x2', tx);
+      vg.setAttribute('y1', PAD.top); vg.setAttribute('y2', H - PAD.bottom);
+      vg.setAttribute('stroke', '#1a1a38'); vg.setAttribute('stroke-width', '1');
+      svg.appendChild(vg);
+      // label (skip 0 — y-axis label handles it)
+      if (tickLabels[i] !== '0') {
+        var lbl = document.createElementNS(svgNS, 'text');
+        lbl.setAttribute('x', tx);
+        lbl.setAttribute('y', H - PAD.bottom + 12);
+        lbl.setAttribute('text-anchor', 'middle');
+        lbl.setAttribute('fill', '#5050a0');
+        lbl.setAttribute('font-size', '8');
+        lbl.setAttribute('font-family', 'Courier New');
+        lbl.textContent = tickLabels[i];
+        svg.appendChild(lbl);
+      }
+    });
+
+    // y tick marks
+    var yTicks;
+    if (Math.abs(yMax) <= 2) { yTicks = [-1, 1]; } else { yTicks = [-3, -2, -1, 1, 2, 3]; }
+    yTicks.forEach(function(yv) {
+      if (yv < yMin || yv > yMax) return;
+      var ty = mapY(yv, yMax, yMin);
+      var hg = document.createElementNS(svgNS, 'line');
+      hg.setAttribute('x1', PAD.left); hg.setAttribute('x2', W - PAD.right);
+      hg.setAttribute('y1', ty); hg.setAttribute('y2', ty);
+      hg.setAttribute('stroke', '#1a1a38'); hg.setAttribute('stroke-width', '1');
+      svg.appendChild(hg);
+      var ytl = document.createElementNS(svgNS, 'text');
+      ytl.setAttribute('x', PAD.left - 5);
+      ytl.setAttribute('y', ty + 4);
+      ytl.setAttribute('text-anchor', 'end');
+      ytl.setAttribute('fill', '#5050a0');
+      ytl.setAttribute('font-size', '8');
+      ytl.setAttribute('font-family', 'Courier New');
+      ytl.textContent = yv;
+      svg.appendChild(ytl);
+    });
+
+    /* asymptotes */
+    def.asymptotes.forEach(function(ax) {
+      if (ax < xMin || ax > xMax) return;
+      var asx = mapX(ax);
+      var asym = document.createElementNS(svgNS, 'line');
+      asym.setAttribute('x1', asx); asym.setAttribute('x2', asx);
+      asym.setAttribute('y1', PAD.top); asym.setAttribute('y2', H - PAD.bottom);
+      asym.setAttribute('stroke', '#ff006e44'); asym.setAttribute('stroke-width', '1.2');
+      asym.setAttribute('stroke-dasharray', '4 3');
+      svg.appendChild(asym);
+    });
+
+    /* curve path */
+    var STEPS = 800;
+    var dx = (xMax - xMin) / STEPS;
+    var pathD = '';
+    var penDown = false;
+
+    for (var i = 0; i <= STEPS; i++) {
+      var x = xMin + i * dx;
+      var y = def.fn(x);
+      if (!isFinite(y) || isNaN(y) || y > yMax * 1.05 || y < yMin * 1.05) {
+        penDown = false;
+        continue;
+      }
+      // detect asymptote jump (large derivative)
+      if (penDown && i > 0) {
+        var yPrev = def.fn(x - dx);
+        if (isFinite(yPrev) && Math.abs(y - yPrev) > (yMax - yMin) * 0.6) {
+          penDown = false;
+        }
+      }
+      var px = mapX(x);
+      var py = mapY(y, yMax, yMin);
+      if (!penDown) {
+        pathD += 'M ' + px.toFixed(2) + ' ' + py.toFixed(2) + ' ';
+        penDown = true;
+      } else {
+        pathD += 'L ' + px.toFixed(2) + ' ' + py.toFixed(2) + ' ';
+      }
+    }
+
+    if (pathD) {
+      var path = document.createElementNS(svgNS, 'path');
+      path.setAttribute('d', pathD);
+      path.setAttribute('fill', 'none');
+      path.setAttribute('stroke', def.color);
+      path.setAttribute('stroke-width', '2');
+      path.setAttribute('stroke-linejoin', 'round');
+      path.setAttribute('stroke-linecap', 'round');
+      svg.appendChild(path);
+    }
+
+    card.appendChild(svg);
+    container.appendChild(card);
+  }
+
+  graphDefs.forEach(buildGraph);
+
+  /* ── 3. Full reference unit circle SVG ──────────────────────────────── */
+  (function buildRefCircle() {
+    var svgNS = 'http://www.w3.org/2000/svg';
+    var svg = document.getElementById('ref-circle-svg');
+    if (!svg) return;
+
+    var CX = 280, CY = 280, R = 175;
+
+    function addEl(tag, attrs, parent) {
+      var el = document.createElementNS(svgNS, tag);
+      Object.keys(attrs).forEach(function(k){ el.setAttribute(k, attrs[k]); });
+      (parent || svg).appendChild(el);
+      return el;
+    }
+    function addText(txt, attrs, parent) {
+      var el = addEl('text', attrs, parent);
+      el.textContent = txt;
+      return el;
+    }
+
+    // background
+    addEl('rect', { x:0, y:0, width:560, height:560, fill:'#12122a' });
+
+    // faint grid
+    addEl('line', { x1:CX, y1:40, x2:CX, y2:520, stroke:'#2a2a5a', 'stroke-width':'1.5' });
+    addEl('line', { x1:40, y1:CY, x2:520, y2:CY, stroke:'#2a2a5a', 'stroke-width':'1.5' });
+
+    // circle
+    addEl('circle', { cx:CX, cy:CY, r:R, fill:'none', stroke:'#2a2a5a', 'stroke-width':'1.5' });
+
+    // axis arrows
+    addEl('polygon', { points:(CX)+','+(CY-R-20)+' '+(CX-5)+','+(CY-R-8)+' '+(CX+5)+','+(CY-R-8), fill:'#2a2a5a' });
+    addEl('polygon', { points:(CX)+','+(CY+R+20)+' '+(CX-5)+','+(CY+R+8)+' '+(CX+5)+','+(CY+R+8), fill:'#2a2a5a' });
+    addEl('polygon', { points:(CX+R+20)+','+(CY)+' '+(CX+R+8)+','+(CY-5)+' '+(CX+R+8)+','+(CY+5), fill:'#2a2a5a' });
+    addEl('polygon', { points:(CX-R-20)+','+(CY)+' '+(CX-R-8)+','+(CY-5)+' '+(CX-R-8)+','+(CY+5), fill:'#2a2a5a' });
+
+    // axis labels
+    addText('+x', { x:CX+R+28, y:CY+5, fill:'#5050a0', 'font-size':'12', 'font-family':'Courier New' });
+    addText('-x', { x:CX-R-36, y:CY+5, fill:'#5050a0', 'font-size':'12', 'font-family':'Courier New' });
+    addText('+y', { x:CX+5, y:CY-R-22, fill:'#5050a0', 'font-size':'12', 'font-family':'Courier New' });
+    addText('-y', { x:CX+5, y:CY+R+30, fill:'#5050a0', 'font-size':'12', 'font-family':'Courier New' });
+
+    // Quadrant labels
+    addText('I',   { x:CX+R*0.55, y:CY-R*0.55, fill:'#39ff1488', 'font-size':'22', 'font-family':'Orbitron', 'font-weight':'700', 'text-anchor':'middle' });
+    addText('II',  { x:CX-R*0.55, y:CY-R*0.55, fill:'#ff006e88', 'font-size':'22', 'font-family':'Orbitron', 'font-weight':'700', 'text-anchor':'middle' });
+    addText('III', { x:CX-R*0.62, y:CY+R*0.55, fill:'#ffd70088', 'font-size':'22', 'font-family':'Orbitron', 'font-weight':'700', 'text-anchor':'middle' });
+    addText('IV',  { x:CX+R*0.55, y:CY+R*0.55, fill:'#00d4ff88', 'font-size':'22', 'font-family':'Orbitron', 'font-weight':'700', 'text-anchor':'middle' });
+
+    var radLabels = {
+      0:'0', 30:'π/6', 45:'π/4', 60:'π/3', 90:'π/2',
+      120:'2π/3', 135:'3π/4', 150:'5π/6', 180:'π',
+      210:'7π/6', 225:'5π/4', 240:'4π/3', 270:'3π/2',
+      300:'5π/3', 315:'7π/4', 330:'11π/6', 360:'2π'
+    };
+    var coords = {
+      0:   ['1', '0'],
+      30:  ['√3/2','1/2'],
+      45:  ['√2/2','√2/2'],
+      60:  ['1/2','√3/2'],
+      90:  ['0','1'],
+      120: ['-1/2','√3/2'],
+      135: ['-√2/2','√2/2'],
+      150: ['-√3/2','1/2'],
+      180: ['-1','0'],
+      210: ['-√3/2','-1/2'],
+      225: ['-√2/2','-√2/2'],
+      240: ['-1/2','-√3/2'],
+      270: ['0','-1'],
+      300: ['1/2','-√3/2'],
+      315: ['√2/2','-√2/2'],
+      330: ['√3/2','-1/2'],
+      360: ['1','0']
+    };
+
+    ANGLES.forEach(function(deg) {
+      if (deg === 360) return; // skip duplicate of 0
+      var rad = deg * Math.PI / 180;
+      var cosV = Math.cos(rad);
+      var sinV = Math.sin(rad);
+
+      // point on circle
+      var px = CX + R * cosV;
+      var py = CY - R * sinV;
+
+      // dot
+      addEl('circle', { cx:px, cy:py, r:4, fill:'#ffd700' });
+
+      // tick from circle to slightly inside
+      var tickLen = 8;
+      addEl('line', {
+        x1: px, y1: py,
+        x2: CX + (R - tickLen) * cosV,
+        y2: CY - (R - tickLen) * sinV,
+        stroke:'#ffd700', 'stroke-width':'1.5'
+      });
+
+      // degree label (outer ring)
+      var degR = R + 24;
+      var dlx = CX + degR * cosV;
+      var dly = CY - degR * sinV;
+      addText(deg + '°', {
+        x: dlx, y: dly + 4,
+        fill:'#7070a0', 'font-size':'8.5', 'font-family':'Courier New',
+        'text-anchor':'middle'
+      });
+
+      // radian label (outermost)
+      var radR = R + 42;
+      var rlx = CX + radR * cosV;
+      var rly = CY - radR * sinV;
+      addText(radLabels[deg] || '', {
+        x: rlx, y: rly + 4,
+        fill:'#bf5af2', 'font-size':'8', 'font-family':'Courier New',
+        'text-anchor':'middle'
+      });
+
+      // coordinate label (slightly inside circle)
+      if (typeof coords[deg] !== 'undefined') {
+        var coordR = R * 0.72;
+        var clx = CX + coordR * cosV;
+        var cly = CY - coordR * sinV;
+        var c = coords[deg];
+        var coordStr = '(' + c[0] + ', ' + c[1] + ')';
+        addText(coordStr, {
+          x: clx, y: cly + 3,
+          fill:'#ffd700', 'font-size':'6.8', 'font-family':'Courier New',
+          'text-anchor':'middle'
+        });
+      }
+
+      // radius line (faint)
+      addEl('line', {
+        x1: CX, y1: CY, x2: px, y2: py,
+        stroke:'#1e1e40', 'stroke-width':'1'
+      });
+    });
+
+    // center dot
+    addEl('circle', { cx:CX, cy:CY, r:3.5, fill:'#5050a0' });
+    addText('O', { x:CX+6, y:CY-6, fill:'#5050a0', 'font-size':'11', 'font-family':'Courier New' });
+  })();
+
+  /* ── 4. Scroll-to-top button ─────────────────────────────────────────── */
+  var scrollBtn = document.getElementById('scroll-top');
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 400) { scrollBtn.classList.add('show'); }
+    else { scrollBtn.classList.remove('show'); }
+  });
+  scrollBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    window.scrollTo({ top:0, behavior:'smooth' });
+  });
+
+}); // end DOMContentLoaded
+</script>
+</body>
+</html>
