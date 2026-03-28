@@ -24,6 +24,41 @@ const TRIG_DATA = {
 
 const TRIG_FUNCTIONS = ['sin', 'cos', 'tan', 'csc', 'sec', 'cot'];
 
+// ─── LaTeX Conversion ────────────────────────────────────────────────────────
+
+function _exprToLatex(s) {
+  if (!s) return '';
+  s = s.replace(/π/g, '\\pi ');
+  s = s.replace(/√(\d+)/g, '\\sqrt{$1}');
+  return s;
+}
+
+// Convert a canonical answer/angle string to a KaTeX-renderable string.
+// Examples: '√3/2' → '\dfrac{\sqrt{3}}{2}', '45°' → '45^{\circ}', 'undefined' → '\text{undefined}'
+function toLatex(str) {
+  if (!str) return '';
+  str = str.trim();
+  if (str === 'undefined') return '\\text{undefined}';
+
+  // Degree angle: "45°", "-30°", "390°"
+  if (str.endsWith('°')) {
+    return str.slice(0, -1) + '^{\\circ}';
+  }
+
+  const neg = str.startsWith('-');
+  const s = neg ? str.slice(1) : str;
+  const sign = neg ? '-' : '';
+
+  const slashIdx = s.indexOf('/');
+  if (slashIdx !== -1) {
+    const num = s.slice(0, slashIdx);
+    const den = s.slice(slashIdx + 1);
+    return sign + `\\dfrac{${_exprToLatex(num)}}{${_exprToLatex(den)}}`;
+  }
+
+  return sign + _exprToLatex(s);
+}
+
 // ─── Angle Utilities ──────────────────────────────────────────────────────────
 
 function reduceToDegrees(deg) {

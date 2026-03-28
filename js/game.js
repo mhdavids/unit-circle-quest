@@ -59,11 +59,25 @@ function nextQuestion() {
 }
 
 function renderQuestion(q) {
-  document.getElementById('question-angle').textContent = q.displayAngle;
-  document.getElementById('question-func').innerHTML =
-    `Find: <span class="func-name">${q.func}</span>(<span id="q-angle-inline">${q.displayAngle}</span>) = ?`;
-  document.getElementById('answer-display').textContent = '▮';
-  document.getElementById('answer-display').className = 'answer-display empty';
+  const angleEl  = document.getElementById('question-angle');
+  const funcEl   = document.getElementById('question-func');
+  const answerEl = document.getElementById('answer-display');
+
+  if (typeof katex !== 'undefined') {
+    const angleTex = toLatex(q.displayAngle);
+    katex.render(angleTex, angleEl, { throwOnError: false, displayMode: true });
+    katex.render(
+      `\\text{Find: }\\${q.func}\\!\\left(${angleTex}\\right) = {?}`,
+      funcEl,
+      { throwOnError: false }
+    );
+  } else {
+    angleEl.textContent = q.displayAngle;
+    funcEl.innerHTML = `Find: <span class="func-name">${q.func}</span>(${q.displayAngle}) = ?`;
+  }
+
+  answerEl.innerHTML = '<span style="opacity:0.3">▮</span>';
+  answerEl.className = 'answer-display empty';
 }
 
 // ─── Timer ────────────────────────────────────────────────────────────────────

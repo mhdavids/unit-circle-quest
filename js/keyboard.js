@@ -47,16 +47,49 @@ class MathKeyboard {
     return result;
   }
 
-  _updateDisplay() {
-    const str = this.buildString();
-    if (!str) {
-      this.displayEl.textContent = '▮';
-      this.displayEl.classList.add('empty');
+  // Build LaTeX directly from state for clean partial-state rendering
+  _stateToLatex() {
+    const s = this.state;
+    if (s.isUndefined) return '\\text{undefined}';
+
+    const sign = s.negative ? '-' : '';
+
+    let numPart = '';
+    if (s.hasRadical) {
+      const coeff = (s.whole && s.whole !== '1') ? s.whole : (s.whole === '1' ? '' : '');
+      numPart = coeff + (s.radical ? `\\sqrt{${s.radical}}` : '\\sqrt{\\phantom{0}}');
     } else {
-      this.displayEl.textContent = str;
-      this.displayEl.classList.remove('empty');
+      numPart = s.whole;
     }
+
+    if (s.hasDenom) {
+      const den = s.denom || '\\phantom{0}';
+      return sign + `\\dfrac{${numPart || '\\phantom{0}'}}{${den}}`;
+    }
+
+    return sign + numPart;
+  }
+
+  _updateDisplay() {
+    const latex = this._stateToLatex();
     this.displayEl.classList.remove('correct', 'wrong');
+
+    if (!latex) {
+      this.displayEl.innerHTML = '<span style="opacity:0.3">▮</span>';
+      this.displayEl.classList.add('empty');
+      return;
+    }
+
+    this.displayEl.classList.remove('empty');
+    if (typeof katex !== 'undefined') {
+      try {
+        this.displayEl.innerHTML = katex.renderToString(latex, { throwOnError: false });
+      } catch {
+        this.displayEl.textContent = this.buildString();
+      }
+    } else {
+      this.displayEl.textContent = this.buildString();
+    }
   }
 
   // ── Which part we're currently editing ───────────────────────────────────

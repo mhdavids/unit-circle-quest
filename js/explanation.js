@@ -16,6 +16,13 @@ const COLORS = {
   yNeg: '#bf5af2',
 };
 
+// ── KaTeX helper ──────────────────────────────────────────────────────────────
+function kSpan(content) {
+  if (typeof katex === 'undefined') return `<span class="math">${content}</span>`;
+  const latex = toLatex(content);
+  return `<span class="math">${katex.renderToString(latex || content, { throwOnError: false })}</span>`;
+}
+
 // ── Main entry point ──────────────────────────────────────────────────────────
 function buildExplanation(question, containerEl) {
   const { deg, canonical, func, answer } = question;
@@ -33,7 +40,14 @@ function buildExplanation(question, containerEl) {
   // 2. Correct answer box
   const ansBox = document.createElement('div');
   ansBox.className = 'correct-answer-box';
-  ansBox.textContent = `${func}(${question.displayAngle}) = ${answer}`;
+  if (typeof katex !== 'undefined') {
+    ansBox.innerHTML = katex.renderToString(
+      `\\${func}\\!\\left(${toLatex(question.displayAngle)}\\right) = ${toLatex(answer)}`,
+      { throwOnError: false, displayMode: true }
+    );
+  } else {
+    ansBox.textContent = `${func}(${question.displayAngle}) = ${answer}`;
+  }
   containerEl.appendChild(ansBox);
 
   // 3. Step list
@@ -57,53 +71,53 @@ function buildSteps(deg, canonical, func, data, displayAngle) {
   const needsCoterminal = deg !== canonical;
 
   if (needsCoterminal) {
-    const diff = canonical - (((deg % 360) + 360) % 360) === 0 ? '' : '';
-    const dir = deg > 0 ? (deg > 360 ? `subtract 360° until in range` : '') : `add 360° until positive`;
-    const verb = deg < 0 ? 'Adding' : 'Subtracting';
     const times = Math.abs(Math.floor(deg / 360)) + (deg < 0 && deg % 360 !== 0 ? 1 : 0);
     const amount = times * 360;
-    steps.push(
-      `<span class="math">${deg < 0 ? deg + '° + ' + amount + '° = ' + canonical + '°' : deg + '° − ' + amount + '° = ' + canonical + '°'}</span> — find the coterminal angle in 0°–360°.`
-    );
+    const expr = deg < 0
+      ? `${deg}^{\\circ} + ${amount}^{\\circ} = ${canonical}^{\\circ}`
+      : `${deg}^{\\circ} - ${amount}^{\\circ} = ${canonical}^{\\circ}`;
+    steps.push(`${kSpan(expr)} — find the coterminal angle in 0°–360°.`);
   }
 
   // Quadrant / reference angle
   const q = data.quadrant;
   const ref = data.refAngle;
   if (q === 0) {
-    steps.push(`<span class="math">${canonical}°</span> is on an axis — read the value directly from the unit circle.`);
+    steps.push(`${kSpan(canonical + '°')} is on an axis — read the value directly from the unit circle.`);
   } else {
     const qLabel = ['', 'I (x+, y+)', 'II (x−, y+)', 'III (x−, y−)', 'IV (x+, y−)'][q];
-    steps.push(`<span class="math">${canonical}°</span> is in Quadrant ${qLabel}. Reference angle: <span class="math">${ref}°</span>.`);
+    steps.push(`${kSpan(canonical + '°')} is in Quadrant ${qLabel}. Reference angle: ${kSpan(ref + '°')}.`);
   }
 
   // Triangle type
+  const coordStr = `(${toLatex(data.cos)},\\, ${toLatex(data.sin)})`;
   if (data.triangleType === '30-60-90') {
-    steps.push(`Use the <span class="math">30-60-90</span> triangle. On the unit circle the point is <span class="math">(${data.cos}, ${data.sin})</span>, so <span class="math">x = ${data.cos}</span>, <span class="math">y = ${data.sin}</span>.`);
+    steps.push(`Use the 30-60-90 triangle. The unit circle point is ${kSpan(coordStr)}, so ${kSpan('x = ' + toLatex(data.cos))}, ${kSpan('y = ' + toLatex(data.sin))}.`);
   } else if (data.triangleType === '45-45-90') {
-    steps.push(`Use the <span class="math">45-45-90</span> triangle. On the unit circle the point is <span class="math">(${data.cos}, ${data.sin})</span>, so <span class="math">x = ${data.cos}</span>, <span class="math">y = ${data.sin}</span>.`);
+    steps.push(`Use the 45-45-90 triangle. The unit circle point is ${kSpan(coordStr)}, so ${kSpan('x = ' + toLatex(data.cos))}, ${kSpan('y = ' + toLatex(data.sin))}.`);
   } else {
-    steps.push(`At this axis angle, the coordinates are <span class="math">(${data.cos}, ${data.sin})</span>.`);
+    steps.push(`At this axis angle, the coordinates are ${kSpan(coordStr)}.`);
   }
 
   // Function formula
+  const undef = '\\text{undefined}';
   const formulaMap = {
-    sin: `sin = y = <span class="math">${data.sin}</span>`,
-    cos: `cos = x = <span class="math">${data.cos}</span>`,
+    sin: `\\sin\\theta = y = ${toLatex(data.sin)}`,
+    cos: `\\cos\\theta = x = ${toLatex(data.cos)}`,
     tan: data.tan === 'undefined'
-      ? `tan = y/x = <span class="math">${data.sin}/${data.cos}</span> = <span class="math">undefined</span> (division by zero)`
-      : `tan = y/x = <span class="math">${data.sin} ÷ ${data.cos} = ${data.tan}</span>`,
+      ? `\\tan\\theta = y/x = ${toLatex(data.sin)} \\div ${toLatex(data.cos)} = ${undef}`
+      : `\\tan\\theta = y/x = ${toLatex(data.sin)} \\div ${toLatex(data.cos)} = ${toLatex(data.tan)}`,
     csc: data.csc === 'undefined'
-      ? `csc = 1/y = <span class="math">1/${data.sin}</span> = <span class="math">undefined</span> (division by zero)`
-      : `csc = 1/y = <span class="math">1/${data.sin} = ${data.csc}</span>`,
+      ? `\\csc\\theta = 1/y = 1 \\div ${toLatex(data.sin)} = ${undef}`
+      : `\\csc\\theta = 1/y = 1 \\div ${toLatex(data.sin)} = ${toLatex(data.csc)}`,
     sec: data.sec === 'undefined'
-      ? `sec = 1/x = <span class="math">1/${data.cos}</span> = <span class="math">undefined</span> (division by zero)`
-      : `sec = 1/x = <span class="math">1/${data.cos} = ${data.sec}</span>`,
+      ? `\\sec\\theta = 1/x = 1 \\div ${toLatex(data.cos)} = ${undef}`
+      : `\\sec\\theta = 1/x = 1 \\div ${toLatex(data.cos)} = ${toLatex(data.sec)}`,
     cot: data.cot === 'undefined'
-      ? `cot = x/y = <span class="math">${data.cos}/${data.sin}</span> = <span class="math">undefined</span> (division by zero)`
-      : `cot = x/y = <span class="math">${data.cos} ÷ ${data.sin} = ${data.cot}</span>`,
+      ? `\\cot\\theta = x/y = ${toLatex(data.cos)} \\div ${toLatex(data.sin)} = ${undef}`
+      : `\\cot\\theta = x/y = ${toLatex(data.cos)} \\div ${toLatex(data.sin)} = ${toLatex(data.cot)}`,
   };
-  steps.push(formulaMap[func]);
+  steps.push(kSpan(formulaMap[func]));
 
   return steps;
 }

@@ -8,6 +8,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
   <script src="js/trig-data.js" defer></script>
 
   <style>
@@ -954,17 +957,17 @@
       <table class="conv-table">
         <thead><tr><th>Degrees</th><th>Radians</th></tr></thead>
         <tbody>
-          <tr><td class="col-deg">0°</td><td class="col-rad">0</td></tr>
-          <tr><td class="col-deg">30°</td><td class="col-rad">π/6</td></tr>
-          <tr><td class="col-deg">45°</td><td class="col-rad">π/4</td></tr>
-          <tr><td class="col-deg">60°</td><td class="col-rad">π/3</td></tr>
-          <tr><td class="col-deg">90°</td><td class="col-rad">π/2</td></tr>
-          <tr><td class="col-deg">120°</td><td class="col-rad">2π/3</td></tr>
-          <tr><td class="col-deg">135°</td><td class="col-rad">3π/4</td></tr>
-          <tr><td class="col-deg">150°</td><td class="col-rad">5π/6</td></tr>
-          <tr><td class="col-deg">180°</td><td class="col-rad">π</td></tr>
-          <tr><td class="col-deg">270°</td><td class="col-rad">3π/2</td></tr>
-          <tr><td class="col-deg">360°</td><td class="col-rad">2π</td></tr>
+          <tr><td class="col-deg">$0^{\circ}$</td><td class="col-rad">$0$</td></tr>
+          <tr><td class="col-deg">$30^{\circ}$</td><td class="col-rad">$\dfrac{\pi}{6}$</td></tr>
+          <tr><td class="col-deg">$45^{\circ}$</td><td class="col-rad">$\dfrac{\pi}{4}$</td></tr>
+          <tr><td class="col-deg">$60^{\circ}$</td><td class="col-rad">$\dfrac{\pi}{3}$</td></tr>
+          <tr><td class="col-deg">$90^{\circ}$</td><td class="col-rad">$\dfrac{\pi}{2}$</td></tr>
+          <tr><td class="col-deg">$120^{\circ}$</td><td class="col-rad">$\dfrac{2\pi}{3}$</td></tr>
+          <tr><td class="col-deg">$135^{\circ}$</td><td class="col-rad">$\dfrac{3\pi}{4}$</td></tr>
+          <tr><td class="col-deg">$150^{\circ}$</td><td class="col-rad">$\dfrac{5\pi}{6}$</td></tr>
+          <tr><td class="col-deg">$180^{\circ}$</td><td class="col-rad">$\pi$</td></tr>
+          <tr><td class="col-deg">$270^{\circ}$</td><td class="col-rad">$\dfrac{3\pi}{2}$</td></tr>
+          <tr><td class="col-deg">$360^{\circ}$</td><td class="col-rad">$2\pi$</td></tr>
         </tbody>
       </table>
     </div>
@@ -980,12 +983,12 @@
       </div>
       <p style="margin-top:0.5rem; color:var(--text-dim);">Examples:</p>
       <div class="coterm-examples">
-        <span class="coterm-tag">-30° ≡ 330°</span>
-        <span class="coterm-tag">390° ≡ 30°</span>
-        <span class="coterm-tag">-π/4 ≡ 7π/4</span>
-        <span class="coterm-tag">5π/2 ≡ π/2</span>
-        <span class="coterm-tag">720° ≡ 0°</span>
-        <span class="coterm-tag">-270° ≡ 90°</span>
+        <span class="coterm-tag">$-30^{\circ} \equiv 330^{\circ}$</span>
+        <span class="coterm-tag">$390^{\circ} \equiv 30^{\circ}$</span>
+        <span class="coterm-tag">$-\dfrac{\pi}{4} \equiv \dfrac{7\pi}{4}$</span>
+        <span class="coterm-tag">$\dfrac{5\pi}{2} \equiv \dfrac{\pi}{2}$</span>
+        <span class="coterm-tag">$720^{\circ} \equiv 0^{\circ}$</span>
+        <span class="coterm-tag">$-270^{\circ} \equiv 90^{\circ}$</span>
       </div>
     </div>
 
@@ -1054,6 +1057,20 @@ window.addEventListener('DOMContentLoaded', function () {
   const ANGLES = [0,30,45,60,90,120,135,150,180,210,225,240,270,300,315,330,360];
 
   /* ── 1. Populate angle tables ─────────────────────────────────────────── */
+  function katexCell(val, cls) {
+    const td = document.createElement('td');
+    td.className = cls;
+    if (val === 'undefined') {
+      td.className += ' undef';
+      td.textContent = 'undef';
+    } else if (typeof katex !== 'undefined' && typeof toLatex !== 'undefined') {
+      td.innerHTML = katex.renderToString(toLatex(val), { throwOnError: false });
+    } else {
+      td.textContent = val;
+    }
+    return td;
+  }
+
   function buildTable(tbodyId) {
     const tbody = document.getElementById(tbodyId);
     if (!tbody || typeof TRIG_DATA === 'undefined') return;
@@ -1061,21 +1078,14 @@ window.addEventListener('DOMContentLoaded', function () {
       const d = TRIG_DATA[deg];
       if (!d) return;
       const tr = document.createElement('tr');
-      function cell(val, cls) {
-        const td = document.createElement('td');
-        td.className = cls;
-        if (val === 'undefined') { td.className += ' undef'; td.textContent = 'undef'; }
-        else td.textContent = val;
-        return td;
-      }
-      tr.appendChild(cell(deg + '°',  'col-angle'));
-      tr.appendChild(cell(d.rad,      'col-rad'));
-      tr.appendChild(cell(d.sin,      'col-sin'));
-      tr.appendChild(cell(d.cos,      'col-cos'));
-      tr.appendChild(cell(d.tan,      'col-tan'));
-      tr.appendChild(cell(d.csc,      'col-csc'));
-      tr.appendChild(cell(d.sec,      'col-sec'));
-      tr.appendChild(cell(d.cot,      'col-cot'));
+      tr.appendChild(katexCell(deg + '°', 'col-angle'));
+      tr.appendChild(katexCell(d.rad,     'col-rad'));
+      tr.appendChild(katexCell(d.sin,     'col-sin'));
+      tr.appendChild(katexCell(d.cos,     'col-cos'));
+      tr.appendChild(katexCell(d.tan,     'col-tan'));
+      tr.appendChild(katexCell(d.csc,     'col-csc'));
+      tr.appendChild(katexCell(d.sec,     'col-sec'));
+      tr.appendChild(katexCell(d.cot,     'col-cot'));
       tbody.appendChild(tr);
     });
   }
@@ -1434,6 +1444,17 @@ window.addEventListener('DOMContentLoaded', function () {
     e.preventDefault();
     window.scrollTo({ top:0, behavior:'smooth' });
   });
+
+  /* ── 5. KaTeX auto-render for $...$ delimiters in lesson text ─────────── */
+  if (typeof renderMathInElement !== 'undefined') {
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$',  right: '$',  display: false },
+      ],
+      throwOnError: false,
+    });
+  }
 
 }); // end DOMContentLoaded
 </script>
