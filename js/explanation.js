@@ -16,11 +16,10 @@ const COLORS = {
   yNeg: '#bf5af2',
 };
 
-// ── KaTeX helper ──────────────────────────────────────────────────────────────
+// ── KaTeX helper — content must already be valid LaTeX ───────────────────────
 function kSpan(content) {
   if (typeof katex === 'undefined') return `<span class="math">${content}</span>`;
-  const latex = toLatex(content);
-  return `<span class="math">${katex.renderToString(latex || content, { throwOnError: false })}</span>`;
+  return `<span class="math">${katex.renderToString(content, { throwOnError: false })}</span>`;
 }
 
 // ── Main entry point ──────────────────────────────────────────────────────────
@@ -83,10 +82,10 @@ function buildSteps(deg, canonical, func, data, displayAngle) {
   const q = data.quadrant;
   const ref = data.refAngle;
   if (q === 0) {
-    steps.push(`${kSpan(canonical + '°')} is on an axis — read the value directly from the unit circle.`);
+    steps.push(`${kSpan(toLatex(canonical + '°'))} is on an axis — read the value directly from the unit circle.`);
   } else {
     const qLabel = ['', 'I (x+, y+)', 'II (x−, y+)', 'III (x−, y−)', 'IV (x+, y−)'][q];
-    steps.push(`${kSpan(canonical + '°')} is in Quadrant ${qLabel}. Reference angle: ${kSpan(ref + '°')}.`);
+    steps.push(`${kSpan(toLatex(canonical + '°'))} is in Quadrant ${qLabel}. Reference angle: ${kSpan(toLatex(ref + '°'))}.`);
   }
 
   // Triangle type
@@ -99,25 +98,38 @@ function buildSteps(deg, canonical, func, data, displayAngle) {
     steps.push(`At this axis angle, the coordinates are ${kSpan(coordStr)}.`);
   }
 
-  // Function formula
+  // Function formula — step 1: definition, step 2: substitution & result
   const undef = '\\text{undefined}';
-  const formulaMap = {
-    sin: `\\sin\\theta = y = ${toLatex(data.sin)}`,
-    cos: `\\cos\\theta = x = ${toLatex(data.cos)}`,
-    tan: data.tan === 'undefined'
-      ? `\\tan\\theta = y/x = ${toLatex(data.sin)} \\div ${toLatex(data.cos)} = ${undef}`
-      : `\\tan\\theta = y/x = ${toLatex(data.sin)} \\div ${toLatex(data.cos)} = ${toLatex(data.tan)}`,
-    csc: data.csc === 'undefined'
-      ? `\\csc\\theta = 1/y = 1 \\div ${toLatex(data.sin)} = ${undef}`
-      : `\\csc\\theta = 1/y = 1 \\div ${toLatex(data.sin)} = ${toLatex(data.csc)}`,
-    sec: data.sec === 'undefined'
-      ? `\\sec\\theta = 1/x = 1 \\div ${toLatex(data.cos)} = ${undef}`
-      : `\\sec\\theta = 1/x = 1 \\div ${toLatex(data.cos)} = ${toLatex(data.sec)}`,
-    cot: data.cot === 'undefined'
-      ? `\\cot\\theta = x/y = ${toLatex(data.cos)} \\div ${toLatex(data.sin)} = ${undef}`
-      : `\\cot\\theta = x/y = ${toLatex(data.cos)} \\div ${toLatex(data.sin)} = ${toLatex(data.cot)}`,
-  };
-  steps.push(kSpan(formulaMap[func]));
+  const sy = toLatex(data.sin);
+  const sx = toLatex(data.cos);
+
+  if (func === 'sin') {
+    steps.push(kSpan(`\\sin\\theta = y`));
+    steps.push(kSpan(`= ${sy}`));
+  } else if (func === 'cos') {
+    steps.push(kSpan(`\\cos\\theta = x`));
+    steps.push(kSpan(`= ${sx}`));
+  } else if (func === 'tan') {
+    steps.push(kSpan(`\\tan\\theta = \\dfrac{y}{x}`));
+    steps.push(data.tan === 'undefined'
+      ? kSpan(`= \\dfrac{${sy}}{${sx}} = ${undef}`)
+      : kSpan(`= \\dfrac{${sy}}{${sx}} = ${toLatex(data.tan)}`));
+  } else if (func === 'csc') {
+    steps.push(kSpan(`\\csc\\theta = \\dfrac{1}{y}`));
+    steps.push(data.csc === 'undefined'
+      ? kSpan(`= \\dfrac{1}{${sy}} = ${undef}`)
+      : kSpan(`= \\dfrac{1}{${sy}} = ${toLatex(data.csc)}`));
+  } else if (func === 'sec') {
+    steps.push(kSpan(`\\sec\\theta = \\dfrac{1}{x}`));
+    steps.push(data.sec === 'undefined'
+      ? kSpan(`= \\dfrac{1}{${sx}} = ${undef}`)
+      : kSpan(`= \\dfrac{1}{${sx}} = ${toLatex(data.sec)}`));
+  } else if (func === 'cot') {
+    steps.push(kSpan(`\\cot\\theta = \\dfrac{x}{y}`));
+    steps.push(data.cot === 'undefined'
+      ? kSpan(`= \\dfrac{${sx}}{${sy}} = ${undef}`)
+      : kSpan(`= \\dfrac{${sx}}{${sy}} = ${toLatex(data.cot)}`));
+  }
 
   return steps;
 }
