@@ -70,8 +70,9 @@ function buildSteps(deg, canonical, func, data, displayAngle) {
   const needsCoterminal = deg !== canonical;
 
   if (needsCoterminal) {
-    const times = Math.abs(Math.floor(deg / 360)) + (deg < 0 && deg % 360 !== 0 ? 1 : 0);
-    const amount = times * 360;
+    const amount = deg < 0
+      ? Math.ceil(Math.abs(deg) / 360) * 360
+      : Math.floor(deg / 360) * 360;
     const expr = deg < 0
       ? `${deg}^{\\circ} + ${amount}^{\\circ} = ${canonical}^{\\circ}`
       : `${deg}^{\\circ} - ${amount}^{\\circ} = ${canonical}^{\\circ}`;
