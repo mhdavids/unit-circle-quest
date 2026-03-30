@@ -115,7 +115,7 @@ function updateTimerBar() {
 }
 
 function handleTimeout() {
-  if (state.waitingForNext) return;
+  if (state.waitingForNext || !state.running) return;
   loseLife();
   showExplanation(state.currentQuestion, () => nextQuestion());
 }
@@ -148,6 +148,7 @@ function handleSubmit(value) {
   } else {
     keyboard.flashWrong();
     state.streak = 0;
+    state.waitingForNext = true;
     loseLife();
     showExplanation(state.currentQuestion, () => nextQuestion());
     updateHUD();
@@ -286,6 +287,15 @@ function hideGameOver() {
 // ─── High Score System (Firebase Realtime Database) ──────────────────────────
 const FB_URL = 'https://unit-circle-quest-default-rtdb.firebaseio.com/scores';
 
+const MAX_POSSIBLE_SCORE = 11650; // 100 correct × 100pts + 33 streak bonuses × 50pts
+const MAX_LEVEL = LEVEL_CONFIGS.length;
+
+function isValidEntry(s) {
+  return s && typeof s.score === 'number' && typeof s.level === 'number' &&
+    s.score >= 0 && s.score <= MAX_POSSIBLE_SCORE &&
+    s.level >= 1 && s.level <= MAX_LEVEL;
+}
+
 async function fetchHighScores() {
   try {
     const res = await fetch(`${FB_URL}.json`);
@@ -293,6 +303,7 @@ async function fetchHighScores() {
     if (!data) return [];
     // Firebase returns an object keyed by push ID — convert to array
     return Object.values(data)
+      .filter(isValidEntry)
       .sort((a, b) => b.score - a.score)
       .slice(0, 10);
   } catch {
