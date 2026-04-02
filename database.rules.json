@@ -1,0 +1,20 @@
+{
+  "rules": {
+    "scores": {
+      ".read": true,
+      "$scoreId": {
+        ".write": "!data.exists()",
+        ".validate": "newData.hasChildren(['name', 'score', 'level', 'ts']) &&
+                      newData.child('name').isString() &&
+                      newData.child('name').val().length <= 3 &&
+                      newData.child('score').isNumber() &&
+                      newData.child('score').val() >= 0 &&
+                      newData.child('score').val() <= 11650 &&
+                      newData.child('level').isNumber() &&
+                      newData.child('level').val() >= 1 &&
+                      newData.child('level').val() <= 10 &&
+                      newData.child('ts').isNumber()"
+      }
+    }
+  }
+}
